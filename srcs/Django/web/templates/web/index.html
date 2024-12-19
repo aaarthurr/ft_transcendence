@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -9,8 +10,8 @@
 
 		<!-- Lien pour l'icÃ´ne Material Symbols -->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-		<link rel="stylesheet" href="style.css">
-		<script src="script.js"></script>
+		<link rel="stylesheet" type="text/css" href="{% static 'web/css/style.css' %}">
+		<script src="{% static 'web/js/script.js' %}"></script>
 </head>
 
 <body>
