@@ -1,0 +1,212 @@
+
+
+/*---------------------------------------- ELEMENT PRINCIPAUX---------------------------*/
+
+html, body {
+    margin: 0; /* Supprime les marges par défaut du navigateur */
+    padding: 0; /* Supprime les espacements internes par défaut */
+    height: 100%; /* Fait en sorte que html et body occupent toute la hauteur de la fenêtre */
+    overflow: hidden; /* Désactive les barres de défilement */
+}
+
+.mainPage, .bottomPage
+{
+    width: 100%; /* Fait occuper à l'élément toute la largeur disponible */
+    height: 100%; /* Fait occuper à l'élément toute la hauteur disponible */
+    display: flex; /* Active le modèle flexbox pour l'élément */
+    justify-content: center; /* Centre horizontalement le contenu interne *(donc tout a l'interieur comme main title)*/
+    align-items: center; /* Centre verticalement le contenu interne */
+	flex-direction: column;  /* Aligne les éléments en colonne pour eviter que le button play soit a droite du titre */
+    background-color: rgb(0, 0, 0); /* Définit une couleur de fond NOIR  */
+
+	position: relative; /*Comme ca la fleche dans .bottomPage ne reste pas en haut aussi sur .mainPage*/
+
+}
+
+.friendMenu {
+    position: fixed;  /* Permet de garder le menu visible en permanence */
+    top: 20px;  /* Décale un peu le menu du haut */
+    left: 0;  /* Positionne le menu à gauche */
+    width: 250px;  /* Largeur du menu */
+    height: 100%;  /* Occupe toute la hauteur de l'écran */
+    background-color: #333;  /* Couleur de fond pour le menu */
+    color: white;  /* Couleur du texte */
+    padding: 20px;  /* Espacement interne */
+    display: none;  /* Masque le menu par défaut */
+    z-index: 1000;  /* Assure que le menu soit au-dessus des autres éléments */
+}
+
+/* Lorsque le friendMenu est actif, on l'affiche */
+.friendMenu.active {
+    display: block;
+}
+
+.friendMenu.not_active {
+    display: none;
+}
+
+
+
+.settingsMenu {
+    position: fixed;  /* Permet de garder le menu visible en permanence */
+    top: 20px;  /* Décale un peu le menu du haut */
+    right: 0;  /* Positionne le menu à gauche */
+    width: 250px;  /* Largeur du menu */
+    height: 100%;  /* Occupe toute la hauteur de l'écran */
+    background-color: #333;  /* Couleur de fond pour le menu */
+    color: white;  /* Couleur du texte */
+    padding: 20px;  /* Espacement interne */
+    display: none;  /* Masque le menu par défaut */
+    z-index: 1000;  /* Assure que le menu soit au-dessus des autres éléments */
+}
+
+/* Lorsque le friendMenu est actif, on l'affiche */
+.settingsMenu.active {
+    display: block;
+}
+
+.settingsMenu.not_active {
+    display: none;
+}
+
+
+
+/*---------------------------------------- ELEMENT DE MENUPAGE---------------------------*/
+
+
+/*friend BUTTON SETUP*/
+.friendButton
+{
+	background-color: transparent; /*permet d'enlever le fond blanc moche*/
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #000000; /* Définit une couleur de title en noir (optionnel) */
+	border: none; /*enleve l'effet de bordure moche de base en html*/
+	
+
+	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: transform 0.3s ease, color 0.3s ease;  /* Transition pour l'effet de hover */
+
+	position: absolute; /*sa position est la ou je lui dis qu'elle est*/
+	left: 10px; /* et la je met a 10 px de la ou je veux que ce soit*/
+	
+}
+
+
+.friendButton:hover {
+    background-color: #3d3d3d; /*change la couleur de fond quand on clique */
+    transform: scale(1.05); /* Agrandit légèrement l'élément */
+}
+/*END OF friends BUTTON SETUP*/
+
+
+
+
+
+/*settings BUTTON SETUP*/
+.settingsButton
+{
+	background-color: transparent; /*permet d'enlever le fond blanc moche*/
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #000000; /* Définit une couleur de title en noir (optionnel) */
+	border: none; /*enleve l'effet de bordure moche de base en html*/
+	
+
+	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: transform 0.3s ease, color 0.3s ease;  /* Transition pour l'effet de hover */
+
+
+	position: absolute; /*sa position est la ou je lui dis qu'elle est*/
+	right: 10px; /* et la je met a 10 px de la ou je veux que ce soit*/
+}
+
+.settingsButton:hover {
+    background-color: #3d3d3d; /*change la couleur de fond quand on clique */
+    transform: scale(1.05); /* Agrandit légèrement l'élément */
+}
+/*END OF settings BUTTON SETUP*/
+
+
+
+
+
+
+
+
+/*---------------------------------------- ELEMENT SECONDAIRE DE MAIN PAGE---------------------------*/
+.mainTitle
+{
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #f7f7f7; /* Définit une couleur de title en blanc casse (optionnel) */
+
+}
+
+
+/*play BUTTON SETUP*/
+.playButton
+{
+	background-color: transparent; /*permet d'enlever le fond blanc moche*/
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #000000; /* Définit une couleur de title en noir (optionnel) */
+	border: none; /*enleve l'effet de bordure moche de base en html*/
+	
+
+	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: transform 0.3s ease, color 0.3s ease;  /* Transition pour l'effet de hover */
+}
+
+.playButton:hover {
+    background-color: #3d3d3d; /*change la couleur de fond quand on clique */
+    transform: scale(1.05); /* Agrandit légèrement l'élément */
+}
+/*END OF play BUTTON SETUP*/
+
+
+
+
+
+
+
+
+/*---------------------------------------- ELEMENT SECONDAIRE DE GAME PAGE---------------------------*/
+
+
+.gameTitle
+{
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #f7f7f7; /* Définit une couleur de title en blanc casse (optionnel) */
+
+}
+
+
+/*TOMAINPAGE BUTTON SETUP*/
+.toMainPageButton
+{
+	background-color: transparent;/*permet d'enlever le fond blanc moche*/
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #000000; /* Définit une couleur de title en noir (optionnel) */
+	border: none; /*enleve l'effet de bordure moche de base en html*/
+
+	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: transform 0.3s ease, color 0.3s ease;  /* Transition pour l'effet de hover */
+
+
+	position: absolute; /*sa position est la ou je lui dis qu'elle est*/
+	top: 10px;
+}
+
+.toMainPageButton:hover {
+    background-color: transparent; /*quand la souris passe dessus change la couleurs*/
+    transform: scale(1.05); /* Agrandit légèrement l'élément */
+}
+/*END OF toMAINPAGE BUTTON SETUP*/
+
+
+
+/*---------------------------------------- GOOGLE FONT UTILS---------------------------*/
+.material-symbols-outlined {
+
+    font-size: 48px;   /* Taille de l'icône */
+    color: #f0f0f0;        /* Couleur de l'icône */
+}
+
+/*---------------------------------------- JAVASCRIPT UTILS---------------------------*/

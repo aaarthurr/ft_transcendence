@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    image: python:3.10
+    container_name: django
+    command: sh -c "pip install django && django-admin startproject mysite . && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Django:/usr/src/app
+    working_dir: /usr/src/app

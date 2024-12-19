@@ -1,0 +1,24 @@
+# Transcendence - 42 Project
+
+**Description**: Transcendence est une application web Full Stack combinant PostgreSQL, Django, JavaScript, HTML, CSS et Docker pour un projet de jeu en ligne.
+
+## Technologies Utilisées
+- **PostgreSQL** : Base de données relationnelle.
+- **Django** : Framework backend en Python.
+- **JavaScript, HTML, CSS** : Interface utilisateur et interactions.
+- **Docker** : Conteneurisation des services.
+
+## Objectif
+Créer une plateforme interactive avec authentification, interactions en temps réel et persistance des données.
+
+## Installation
+1. Cloner le dépôt :
+   ```bash
+   git clone git@github.com:aaarthurr/ft_transcendence.git transcendence
+   ```
+2. Lancer les conteneurs Docker :
+   ```bash
+   docker-compose up
+   ```
+3. Accéder à l'application : [http://localhost:8000](http://localhost:8000).
+
