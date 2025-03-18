@@ -1,0 +1,61 @@
+
+
+services:
+  db:
+    build:
+      context: ./postgres  # Ce dossier contient le Dockerfile de PostgreSQL
+    container_name: mypostgresdb
+    env_file:
+      - .env  # Load variables from .env file
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "myuser", "-d", "mydb"]
+      interval: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    networks:
+      - transcendence_network
+
+  web:
+    build:
+      context: ./Django  # Ce dossier contient le Dockerfile de Django
+    container_name: django
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./Django:/usr/src/app
+      - ./Django/web/static:/usr/src/app/web/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: sh -c "sleep 10 && pip install -r requirements.txt && python3 manage.py migrate && daphne mysite.asgi:application -b 0.0.0.0 -p 8000"
+    networks:
+      - transcendence_network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web  # Changer ici de "django" à "web"
+    networks:
+      - transcendence_network
+
+volumes:
+  postgres_data:
+
+networks:
+  transcendence_network:
+    driver: bridge

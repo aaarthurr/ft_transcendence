@@ -1,0 +1,367 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TRANSCENDENCE</title>
+
+        <!-- Lien vers Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap" rel="stylesheet">
+
+        <!-- Lien pour l'icÃ´ne Material Symbols -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <link rel="stylesheet" type="text/css" href="{% static 'web/css/style.css' %}">
+        <script type="text/javascript"  src="{% static 'web/js/script.js' %}"></script>
+        <script type="text/javascript"  src="{% static 'web/js/pong.js' %}"></script>
+		
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <input type="hidden" id="csrfToken" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <!-- MAIN PAGE -->
+    <div id="mainPage" class="mainPage">
+		
+		<div id="notif-box" class="hide">
+			<p id="notif-message">Nouvelle notification !</p>
+			<button onclick="hideNotif()">OK</button>
+		</div>
+        <h1 class="mainTitle">TRANSCENDENCE</h1>
+        <button class="friendButton" onclick="unscrollToSettingMenu()">
+            <span class="material-symbols-outlined">group_add</span>
+        </button>
+    
+        <button class="settingsButton" onclick="unscrollToFriendMenu()">
+            <span class="material-symbols-outlined">settings</span>
+        </button>
+
+        <button class="playButton" onclick="scrollToBottom()">
+            <span class="material-symbols-outlined">play_circle</span>
+            <span class="material-symbols-outlined">PLAY</span>
+        </button>
+
+</div> 
+
+
+    <!-- GAME PAGE -->
+    <div id="bottomPage" class="bottomPage">
+	<!--	<form id="form">
+			<input type="text" name="message"/>
+			</form>
+			<span id="messages" style="color: white;background-color: rgb(255, 0, 0);" ></div>
+			</span>-->
+        <button class="toMainPageButton" onclick="scrollToMainPage()">
+            <span class="material-symbols-outlined">keyboard_double_arrow_up</span>
+        </button>
+
+
+        <div id="scoreboard" class="TheGame">
+            <h2 id="p1-points" style="font-family: 'Poiret One';"></h2>
+            <h2 id="p2-points" style="font-family: 'Poiret One';"></h2>
+        </div>
+
+
+		<center><div id="GameMenu">
+			<span id="VsAi" onclick="activateAiGame()" class="GameOption" >
+				<span class="material-symbols-outlined">smart_toy</span>
+				<span class="material-symbols-outlined">Vs Ai</span>
+			</span>
+			<span id="VsFriend" onclick="activateFriendMenu()" class="GameOption">
+				<span class="material-symbols-outlined">swords</span>
+				<span class="material-symbols-outlined">Vs Friend</span>
+			</span>
+			<span id="local" onclick="activateFriendMenu()" class="GameOption">
+				<span class="material-symbols-outlined">public_off</span>
+				<span class="material-symbols-outlined">Local</span>
+			</span>
+			<span id="online" onclick="ShowFriendList_game()" class="GameOption">
+				<span class="material-symbols-outlined">language</span>
+				<span class="material-symbols-outlined">Online</span>
+			</span>
+		</div></center>
+
+
+		<h1 id="FriendTitle" class="material-symbols-outlined" style="color: white; font-family: 'Poiret One', serif">Friend List</h1>
+		<div class="friendList">
+				<ul id = "friendList"></ul>
+		</div>
+
+   		<canvas id= "TheGame" style="border:1px solid rgb(102, 90, 102);" class="TheGame"> </canvas>
+		<button id="ReturnButton" class="material-symbols-outlined" onclick="returnToPreviousMenu()">arrow_backReturn</button>
+
+		
+		<div id="GameInvite">
+			<button class="material-symbols-outlined" id="accept" onclick="acceptGameInvite()" ><span>check</span><span>Accept</span></button>
+			<button class="material-symbols-outlined" id="decline" onclick="declineGameInvite()"><span>close</span><span>Decline</span></button>
+		</div>
+
+
+		<span class="material-symbols-outlined" id="loading">Waiting for p2 to accept...</span>
+		<div id="winner">
+			<span class="material-symbols-outlined" style="scale: 2">trophy</span>
+			<span id="winText" class="material-symbols-outlined"></span>
+			<span class="returnButton" onclick="rePlay()" style="margin-top: 35%;">
+				<span class="material-symbols-outlined" >refresh</span>
+				<span style="   font-size: 35px; color: #f0f0f0; font-family: 'Poiret One'; " >Play again</span>
+			</span>
+			<span class="returnButton" onclick="returnToMenu()" style="margin-top: 60%;">
+				<span class="material-symbols-outlined" >arrow_back</span>
+				<span style="   font-size: 35px; color: #f0f0f0; font-family: 'Poiret One';" >Return to menu</span>
+			</span>
+		</div>
+
+
+    </div>
+
+
+<!-- HERE IS THE FRIEND MENU -->
+	<div id="friendMenu" class="friendMenu">
+			<h1 class="smallerTitle">Friends</h1>
+			<input 
+				type="text" 
+				id="searchBar" 
+				placeholder="Rechercher un ami..."
+				oninput="searchFriends()" 
+			/>
+			<ul id="results"></ul>  <!-- Affichage des résultats de recherche -->
+	
+	
+	
+	
+			<h3 class="simpleText">Demande d'amis</h3>
+	
+			<ul id="friend-request-list">
+				<!-- Liste des amis affichée ici -->
+			</ul>
+	
+			<h3 class="simpleText">Liste d'amis</h3>
+			<ul id="friend-list">
+				<!-- Liste des amis affichée ici -->
+			</ul>
+	
+	
+			<div id="userDetails" class="userDetails">
+	
+				<button class="backButton" onclick="resetUserDetails()">
+					<span class="material-symbols-outlined">arrow_back</span>
+				</button>
+	
+				<h2><span id="userUsername" class="userName"></span></h2>
+				<div id="ifUnblocked">
+					<p><strong>Online status :</strong> <span id="userStatus"></span></p>
+					
+					<div class="userButtonBox">
+					<!-- Bouton Ajouter un ami avec un attribut data pour stocker l'ID -->
+					<button id="addFriendButton" 
+							class="addFriendButton" 
+							data-user-id="" 
+							onclick="addFriendRequest()">
+							<p>Ajouter</p>
+							<span class="material-symbols-outlined icon-smaller">person_add</span>
+					</button>
+	
+					<button id="statsButton" 
+							class="addFriendButton" 
+							data-user-id="" 
+							onclick="activateUserStats()">
+							<p>Stats</p>
+							<span class="material-symbols-outlined icon-smaller">trophy</span>
+					</button>
+	
+					<button id="blockButton" 
+							class="blockButton" 
+							data-user-id="" 
+							onclick="blockUser()">
+							<p>Bloquer</p>
+							<span class="material-symbols-outlined icon-smaller">block</span>
+					</button>
+					</div>
+	
+	
+					<div id="ifFriend">
+						<button id="sendGameButton" 
+							class="sendGameButton" 
+							data-user-id="" 
+							onclick="addFriendRequest()">
+							<p>Jouer</p>
+						</button>
+						<div class="chat_zone">	
+							<div id="userChat" class="chat">
+							</div>
+							<input id="sendMessageBar" 
+								type="text" 
+								placeholder="Votre message..."
+								data-user-id="" 
+								oninput="searchFriends()" />
+						</div>
+					</div>
+					<div id="ifNotFriend">
+						<hr>
+						<h3 class="userName">Ajouter le joueur pour interagir</h3>
+					</div>
+	
+				</div>
+				
+				<div id="ifBlocked">
+					<div class="userButtonBox">
+						<button id="unblockButton" 
+							class="unblockButton" 
+							data-user-id="" 
+							onclick="unblockUser()">
+							<p>Debloquer</p>
+							<span class="material-symbols-outlined icon-smaller">favorite</span>
+						</button>
+					</div>
+					<hr>
+				</div>
+
+				<div id="userStats" class="userStats">
+					<button class="backButton" onclick="resetUserStats()">
+						<span class="material-symbols-outlined">arrow_back</span>
+					</button>
+					<h1 class="simpleText">Stats</h1>
+					<div class="statsTextWrapper">
+						<p id="Ratio">Ratio:</p>
+						<p id="Rank">Rank:</p>
+					</div>
+					<div class="chart-wrapper">
+						<canvas id="winLossChart_User" class="chartSelf"></canvas>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	
+	
+	
+	
+		
+	</div>
+	
+		
+	
+	
+	<!-- HERE IS THE SETTINGS MENU -->
+    <div id="settingsMenu" class="settingsMenu">
+        <h1 class="smallerTitle">Settings</h1>
+
+
+        <h2 id="username">{{ request.user.username }}</h2>
+		<h2> {{ request.user.email }}</h2>
+
+
+		<div class="image-container" id="imageContainer">
+			<img src="{% static 'web/images/pdp_alien.png' %}" 
+					alt="My pdp" 
+					class="pdp" 
+					id="profilePic" 
+					onclick="changePDP()"
+					data-male="{% static 'web/images/pdp_male.png' %}" 
+					data-female="{% static 'web/images/pdp_female.png' %}" 
+					data-alien="{% static 'web/images/pdp_alien.png' %}">
+		</div>
+
+
+
+		<div class="userButtonBox">
+			<button id="settingInfoButton" 
+					class="addFriendButton" 
+					onclick="activateSettingsInfo()">
+					<p>Info</p>
+					<span class="material-symbols-outlined icon-smaller">person</span>
+			</button>
+
+
+
+			<button id="statsSettingButton" 
+					class="addFriendButton"
+					data-user-id="{{ request.user.id }}"
+					onclick="activateSettingsStats(this.dataset.userId)">
+					<p>Stats</p>
+					<span class="material-symbols-outlined icon-smaller">trophy</span>
+			</button>
+
+
+
+			<button id="SettingsSettingButton" 
+					class="addFriendButton" 
+					onclick="activateSettingsSettings()">
+					<p>Settings</p>
+					<span class="material-symbols-outlined icon-smaller">settings</span>
+			</button>
+
+
+		</div>
+
+
+		
+		<div id="SettingsInfo" style="display: block;">
+			<h1 class="simpleText">Info</h1>
+
+			<h2>Match History</h2>
+		</div>
+
+
+
+
+
+		<div id="SettingsStats" style="display: none;">
+			<h1 class="simpleText">Stats</h1>
+			<div class="statsTextWrapper">
+				<p id="Ratio_self">Ratio:</p>
+				<p id="Rank_self">Rank:</p>
+			</div>
+			<div class="chart-wrapper">
+				<canvas id="winLossChart" class="chartSelf"></canvas>
+			</div>
+		</div>
+
+
+
+		<div id="SettingsSetting"  style="display: none;">
+			<h1 class="simpleText">Settings</h1>
+
+			<input type="color" id="colorPickerA" class="colorPicker">
+			<input type="color" id="colorPickerB" class="colorPicker">
+			<button onclick="submitColors()">Enregistrer</button>
+
+			<button class="SettingsSetting_Button" data-target="usernameChangeForm">Change Username</button>
+			<form id="usernameChangeForm" action="/change_username/" method="POST" style="display: none;">
+			  {% csrf_token %}
+			  <input type="text" name="username" placeholder="Change Username" required>
+			  <input type="text" name="confirm_username" placeholder="Confirm Username" required>
+			  <button type="submit">Changer Username</button>
+			  <button type="button" class="cancelButton" data-target="usernameChangeForm">Annuler</button>
+			</form>
+
+
+
+			<button class="SettingsSetting_Button" data-target="passwordChangeForm">Change Password</button>
+			<form id="passwordChangeForm" action="/change_password/"  method="POST" style="display: none;">
+			  {% csrf_token %}
+			  <input type="password" name="password" placeholder="Change Password" required>
+			  <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+			  <button type="submit">Changer Password</button>
+			  <button type="button" class="cancelButton" data-target="passwordChangeForm">Annuler</button>
+			</form>
+
+
+
+
+			
+
+		<button id="BloodButton" class="SettingsSetting_BloodButton" onclick="bloodMode()">BLOOD MODE OFF</button>
+
+
+			<a style="right: 10px;" href="{% url 'logout' %}" id="logoutButton"><span class="material-symbols-outlined">logout</span></a>
+			
+		</div>
+
+    </div>
+
+    
+
+
+</body>
+</html>
