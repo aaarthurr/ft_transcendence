@@ -1,6 +1,5 @@
 let MenuTrigger = 0;
 
-
 /*------------------------ SETUP WEBSOCKET ------------------------- */
 
 
@@ -14,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Connexion réussie
     window.mySocket.onopen = function () {
         console.log("✅ WebSocket connecté !");
+		//set_user_status(1);
     };
 
     // Gestion des erreurs
@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             window.mySocket = new WebSocket(url); // Reconnexion
         }, 3000);
+		//set_user_status(0);
     };
 
 	window.mySocket.onmessage = function(event) {
@@ -55,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				move_remote_ball(data);
 			}
 		}
-		else if (data.type === "game_invite")
+		if (data.type === "game_invite")
 		{
 			showNotif("New game invite !");
 			handleGameInvite(data);
@@ -69,19 +70,29 @@ document.addEventListener("DOMContentLoaded", () => {
 		else if (data.type == "decline")
 		{
 			let loading = document.getElementById("loading");
+			let returnButton = document.getElementById('ReturnButton');
+			let cant_play = document.getElementById('cant_play');
+
 			loading.classList.remove("active");
+			returnButton.classList.add('active');
 			user_id = "";
 			p2_username = "";
-			ShowFriendList_game();
+			cant_play.innerText = "can't send game invite: p2 is already in game";
+			cant_play.classList.add('active');
+			p2_username = '';
+			MenuTrigger = 3;
 
 		}
 	};
+	showMatchHistory();
+	showFriendList();
+	showFriendRequestList();
 });
 
 
 /*--------SETUP---------*/
-showFriendList();
-showFriendRequestList();
+
+
 let notifTimeout; // Variable pour stocker le timeout
 let lastMessageTimestamp = 0;
 let settingDisplayType = 0;
@@ -89,10 +100,9 @@ let settingDisplayType = 0;
 // Global variable to store the chart instance
 let winLossChartInstance;
 let winLossChartInstance_user;
-
-
 /*------------------------------------FONCTION PRINCIPALE MOUVEMENT SUR LA PAGE-------------------------*/
 var is_in_bottom = 1
+
 function scrollToBottom()
 {
     document.getElementById('bottomPage').scrollIntoView({ behavior: 'smooth' });
@@ -109,6 +119,28 @@ function scrollToMainPage()
 }
 /*----------------GAME STUFF--------------*/ 
 
+function showMatchHistory() {
+    let matchHistory = document.getElementById("matchHistory");
+
+    fetch('/match-history/')
+    .then(response => response.json())
+    .then(data => {
+        matchHistory.innerHTML = '';  // Clear existing matches
+
+        if (data.match_history.length === 0) {
+            matchHistory.innerHTML = '<p>No matches found.</p>';
+        } else {
+            data.match_history.forEach(match => {
+                matchHistory.insertAdjacentHTML(
+                    'beforeend',
+                    `<li>Opponent: ${match.opponent} | Result: ${match.result} | Score: ${match.score_player} - ${match.score_opponent}</li>`
+                );
+            });
+        }
+    })
+    .catch(error => console.error("Error fetching match history:", error));
+}
+
 function returnToPreviousMenu()
 {
 	let VsAi = document.getElementById('VsAi');
@@ -118,6 +150,13 @@ function returnToPreviousMenu()
 	let	friendMenu = document.getElementsByClassName('friendList');
 	let friendTitle = document.getElementById('FriendTitle');
 	let returnButton = document.getElementById('ReturnButton');
+	let cant_play = document.getElementById('cant_play');
+
+	let tournamentButton = document.getElementById('Tournament');
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
+	let tournamentForm4 = document.getElementById('theTournament4');
+	let tournamentForm8 = document.getElementById('theTournament8');
 
 	if (MenuTrigger === 1)
 	{
@@ -127,6 +166,11 @@ function returnToPreviousMenu()
 		VsFriend.classList.remove('inactive');
 		local.classList.remove('active');
 		online.classList.remove('active');
+		tournamentButton.classList.remove('inactive');
+
+		tournament4.classList.remove('active');
+		tournament8.classList.remove('active');
+
 	}
 	else if (MenuTrigger === 2)
 	{
@@ -135,6 +179,29 @@ function returnToPreviousMenu()
 		online.classList.add('active');
 		friendTitle.classList.remove('active');
 		friendMenu[0].classList.remove('active');
+	}
+	else if (MenuTrigger === 3)
+	{
+		MenuTrigger = 2;
+		cant_play.classList.remove('active');
+		friendTitle.classList.add('active');
+		friendMenu[0].classList.add('active');
+		VsAi.classList.add('inactive');
+		VsFriend.classList.add('inactive');
+		tournamentButton.classList.add('inactive');
+
+
+		online.classList.remove('active');
+		local.classList.remove('active');
+	
+		tournament4.classList.add('active');
+		tournament8.classList.add('active');
+
+		tournamentForm4.classList.remove('active');
+		tournamentForm8.classList.remove('active');
+		
+	
+		returnButton.classList.add('active');
 	}
 }
 
@@ -145,6 +212,8 @@ function activateAiGame()
 	let	Scoreboard = document.getElementById('scoreboard');
 	let winner = document.getElementById('winner');
 	let returnButton = document.getElementById('ReturnButton');
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
 
 	returnButton.classList.remove('active');
 	GameMenu.classList.add('inactive');
@@ -153,6 +222,8 @@ function activateAiGame()
 	winner.classList.remove('active');
 	aitrigger = 1;
 	trigger = 0;
+	tournament4.classList.add('inactive');
+	tournament8.classList.add('inactive');
 }
 
 function activateLocalGame()
@@ -162,6 +233,8 @@ function activateLocalGame()
 	let	Scoreboard = document.getElementById('scoreboard');
 	let winner = document.getElementById('winner');
 	let returnButton = document.getElementById('ReturnButton');
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
 
 	returnButton.classList.remove('active');
 	GameMenu.classList.add('inactive');
@@ -170,6 +243,8 @@ function activateLocalGame()
 	winner.classList.remove('active');
 	localtrigger = 1;
 	trigger = 0;
+	tournament4.classList.add('inactive');
+	tournament8.classList.add('inactive');;
 }
 
 function activateFriendMenu()
@@ -179,13 +254,126 @@ function activateFriendMenu()
 	let online = document.getElementById('online');
 	let local = document.getElementById('local');
 	let returnButton = document.getElementById('ReturnButton');
+	let tournamentButton = document.getElementById('Tournament');
+
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
 
 	MenuTrigger = 1;
 	returnButton.classList.add('active');
 	VsAi.classList.add('inactive');
 	VsFriend.classList.add('inactive');
+	tournamentButton.classList.add('inactive');
 	local.classList.add('active');
 	online.classList.add('active');
+	tournament4.classList.add('inactive');
+	tournament8.classList.add('inactive');
+}
+
+
+function activateTournament()
+{
+	let VsAi = document.getElementById('VsAi');
+	let VsFriend = document.getElementById('VsFriend');
+	let online = document.getElementById('online');
+	let local = document.getElementById('local');
+	let returnButton = document.getElementById('ReturnButton');
+
+	let tournamentButton = document.getElementById('Tournament');
+
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
+	let tournamentForm4 = document.getElementById('theTournament4');
+	let tournamentForm8 = document.getElementById('theTournament8');
+
+	MenuTrigger = 1;
+
+
+	VsAi.classList.add('inactive');
+	VsFriend.classList.add('inactive');
+	online.classList.remove('active');
+	local.classList.remove('active');
+
+	tournament4.classList.add('active');
+	tournament8.classList.add('active');
+
+	
+	tournamentButton.classList.add('inactive');
+
+
+	returnButton.classList.add('active');
+	
+
+}
+
+function activateTournament8()
+{
+	let VsAi = document.getElementById('VsAi');
+	let VsFriend = document.getElementById('VsFriend');
+	let online = document.getElementById('online');
+	let local = document.getElementById('local');
+	let returnButton = document.getElementById('ReturnButton');
+
+	let tournamentButton = document.getElementById('Tournament');
+
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
+	let tournamentForm4 = document.getElementById('theTournament4');
+	let tournamentForm8 = document.getElementById('theTournament8');
+
+	MenuTrigger = 3;
+
+
+	VsAi.classList.add('inactive');
+	VsFriend.classList.add('inactive');
+	online.classList.remove('active');
+	local.classList.remove('active');
+
+	tournament4.classList.remove('active');
+	tournament8.classList.remove('active');
+	tournamentButton.classList.add('inactive');
+
+	tournamentForm4.classList.remove('active');
+	tournamentForm8.classList.add('active');
+
+
+	returnButton.classList.add('active');
+	
+
+}
+function activateTournament4()
+{
+	let VsAi = document.getElementById('VsAi');
+	let VsFriend = document.getElementById('VsFriend');
+	let online = document.getElementById('online');
+	let local = document.getElementById('local');
+	let returnButton = document.getElementById('ReturnButton');
+
+	let tournamentButton = document.getElementById('Tournament');
+
+	let tournament4 = document.getElementById('tournament4');
+	let tournament8 = document.getElementById('tournament8');
+	let tournamentForm4 = document.getElementById('theTournament4');
+	let tournamentForm8 = document.getElementById('theTournament8');
+
+	MenuTrigger = 3;
+
+
+	VsAi.classList.add('inactive');
+	VsFriend.classList.add('inactive');
+	online.classList.remove('active');
+	local.classList.remove('active');
+
+	tournament4.classList.remove('active');
+	tournament8.classList.remove('active');
+	tournamentButton.classList.add('inactive');
+
+	tournamentForm4.classList.add('active');
+	tournamentForm8.classList.remove('active');
+
+
+
+	returnButton.classList.add('active');
 	
 }
 
@@ -197,12 +385,12 @@ function activateFriendGame()
 	let	Scoreboard = document.getElementById('scoreboard');
 	let winner = document.getElementById('winner');
 
+	friendtrigger = 1;
 	friendTitle.classList.remove('active');
 	friendMenu[0].classList.remove('active');
 	TheGame.classList.add('active');
 	Scoreboard.classList.add('active');
 	winner.classList.remove('active');
-	friendtrigger = 1;
 }
 
 function handleGameInvite(_data)
@@ -217,22 +405,27 @@ function handleGameInvite(_data)
 	let returnButton = document.getElementById('ReturnButton');
 	let winner = document.getElementById('winner');
 
-	VsAi.classList.add('inactive');
-	VsFriend.classList.add('inactive');
-	local.classList.remove('active');
-	online.classList.remove('active');
-	friendTitle.classList.remove('active');
-	friendMenu[0].classList.remove('active');
-	returnButton.classList.remove('active');
-	winner.classList.remove('active');
-	GameInvite.classList.add('active');
+
 	
-	console.log("_data.hostname:", _data.hostname);
+//	console.log("_data.hostname:", _data.hostname);
 	fetch(`/search_users/?q=${_data.hostname}`) // make a global setup
 	.then(response => response.json())
 	.then(data => {
-		if (data.users && data.users[0].username === _data.hostname)
+		if (friendtrigger === 1 || aitrigger === 1 || localtrigger === 1)
+			declineGameInvite(data.users[0].id)
+		else if (data.users && data.users[0].username === _data.hostname)
+		{
 			user_id = data.users[0].id;
+			VsAi.classList.add('inactive');
+			VsFriend.classList.add('inactive');
+			local.classList.remove('active');
+			online.classList.remove('active');
+			friendTitle.classList.remove('active');
+			friendMenu[0].classList.remove('active');
+			returnButton.classList.remove('active');
+			winner.classList.remove('active');
+			GameInvite.classList.add('active');
+		}
 	})
 	hostname = _data.hostname;
 }
@@ -254,7 +447,7 @@ function acceptGameInvite()
 	activateFriendGame();
 }
 
-function declineGameInvite()
+function declineGameInvite(_user_id)
 {
 	let VsAi = document.getElementById('VsAi');
 	let VsFriend = document.getElementById('VsFriend');
@@ -267,7 +460,7 @@ function declineGameInvite()
 		const sending_data = {
 			type: "decline",
 			player_id: p1_username,
-			target_group: "user_" + user_id,
+			target_group: "user_" + _user_id,
 		}
 		window.mySocket.send(JSON.stringify(sending_data));
 	}
@@ -280,31 +473,46 @@ function ChallengeFriend(_p2_username)
 	let friendTitle = document.getElementById('FriendTitle');
 	let returnButton = document.getElementById('ReturnButton');
 	let winner = document.getElementById('winner');
+	let cant_play = document.getElementById('cant_play');
 
 	winner.classList.remove('active');
-	returnButton.classList.remove('active');
 	friendTitle.classList.remove('active');
 	friendMenu[0].classList.remove('active');
 	console.log("_p2_username: ", _p2_username);
 	fetch(`/search_users/?q=${_p2_username}`) // make a global setup
 	.then(response => response.json())
 	.then(data => {
-		if (data.users && data.users[0].username === _p2_username)
+		if (data.users)
 		{
-			user_id = data.users[0].id;
-			if (window.mySocket.readyState === WebSocket.OPEN) {
-				const sending_data = {
-					type: "game_invite",
-					hostname: p1_username,
-					target_group: "user_" + user_id,
+			get_user_status(data.users[0].id)
+			.then( user_status => {
+				console.log("data.users[0].username",data.users[0].username , "user_status",  user_status);
+				if (user_status == false)
+				{
+					cant_play.innerText = "can't send game invite: p2 is offline";
+					cant_play.classList.add('active');
+					p2_username = '';
+					MenuTrigger = 3;
 				}
-				window.mySocket.send(JSON.stringify(sending_data));
-			}
+				else if (data.users[0].username === _p2_username)
+				{
+					user_id = data.users[0].id;
+					if (window.mySocket.readyState === WebSocket.OPEN) {
+						const sending_data = {
+							type: "game_invite",
+							hostname: p1_username,
+							target_group: "user_" + user_id,
+						}
+						window.mySocket.send(JSON.stringify(sending_data));
+						MenuTrigger = 3;
+						loading.classList.add("active");
+						returnButton.classList.remove('active');
+						p2_username = _p2_username;
+					}
+				}
+			})
 		}
 	})
-
-	p2_username = _p2_username;
-	loading.classList.add("active");
 }
 
 function rePlay()
@@ -567,10 +775,10 @@ async function getSelfStats(id) {
         const data = await response.json();
 
         if (data.success) {
-            console.log("User ID:", data.user_id);
-            console.log("Victories:", data.victories);
-            console.log("Losses:", data.losses);
-            console.log("Rank:", data.rank);
+           // console.log("User ID:", data.user_id);
+         //   console.log("Victories:", data.victories);
+           // console.log("Losses:", data.losses);
+           // console.log("Rank:", data.rank);
 
 			showSelfStats(data.victories, data.losses, data.rank)
         } else {
@@ -591,7 +799,7 @@ function showSelfStats(wins, losses, rank) {
   let ratio = (wins + losses) > 0 ? (wins / (wins + losses)).toFixed(2) : "N/A";
 
   // Update the Ratio and Rank display
-  document.getElementById("Ratio_self").textContent = `Winrate: ${ratio * 100}%`;
+  document.getElementById("Ratio_self").textContent = `Ratio: ${ratio}`;
   document.getElementById("Rank_self").textContent = `Rank: ${rank}`;
 
   // Get the canvas
@@ -667,32 +875,66 @@ function fetchUsers(query = '') {
 }
 
 
-function friendOptionMenu(user) {
-	//console.log("Friendoptionmenu open");
-  //  console.log("Utilisateur reçu dans friendOptionMenu :", user);
-  //  console.log("Utilisateur a l'ID", user.id);
 
-    // Affiche les détails de l'utilisateur
-	selectUserDisplay(user.id);
+function friendOptionMenu(userId) {
+    fetch(`/get_user_info/?user_id=${userId.id}`, { method: "GET" })
+        .then(response => response.json())
+        .then(user => {
+            if (user.error) {
+                console.error("Erreur:", user.error);
+                return;
+            }
 
-    document.getElementById("userDetails").classList.add("active");
-    document.getElementById("userUsername").innerText = user.username;
-	console.log(user.is_online);
-    document.getElementById("userStatus").innerText = user.is_online;
-    
-    // Stocker l'ID de l'utilisateur cible dans le bouton
-    document.getElementById("addFriendButton").setAttribute("data-user-id", user.id);
-    document.getElementById("blockButton").setAttribute("data-user-id", user.id);
-	document.getElementById("unblockButton").setAttribute("data-user-id", user.id);
-    document.getElementById("statsButton").setAttribute("data-user-id", user.id);
+            // Affiche les détails de l'utilisateur
+            selectUserDisplay(user.id);
 
-    document.getElementById("sendMessageBar").setAttribute("data-user-id", user.id);
+            document.getElementById("userDetails").classList.add("active");
+            document.getElementById("userUsername").innerText = user.username;
+            document.getElementById("userStatus").innerText = user.is_online ? "En ligne" : "Hors ligne";
 
-	console.log("test");
-	lastMessageTimestamp = 0;
-	clearChat();
-	fetchMessages();
+            // Stocker l'ID de l'utilisateur cible dans les boutons
+            document.getElementById("addFriendButton").setAttribute("data-user-id", user.id);
+            document.getElementById("blockButton").setAttribute("data-user-id", user.id);
+            document.getElementById("unblockButton").setAttribute("data-user-id", user.id);
+            document.getElementById("statsButton").setAttribute("data-user-id", user.id);
+            document.getElementById("sendMessageBar").setAttribute("data-user-id", user.id);
+
+            setFriendPdp(user);
+
+            console.log("test");
+            lastMessageTimestamp = 0;
+            clearChat();
+            fetchMessages();
+        })
+        .catch(error => console.error("Erreur lors de la récupération de l'utilisateur :", error));
 }
+
+
+function setFriendPdp(user) {
+	const imageContainer = document.getElementById("friendImageContainer");
+
+	imageContainer.style.background = `linear-gradient(45deg, ${user.color1} 0%, ${user.color2} 100%)`;
+    const profilePic = document.getElementById("friendProfilePic");
+
+    // Récupère les URL depuis les attributs data
+    const maleImg = profilePic.getAttribute("data-male");
+    const femaleImg = profilePic.getAttribute("data-female");
+    const alienImg = profilePic.getAttribute("data-alien");
+
+    which_friend_pic = user.picture; // Incrémente
+
+    if (which_friend_pic === 1) {
+        profilePic.src = maleImg;
+    } 
+    else if (which_friend_pic === 2) {
+        profilePic.src = femaleImg;
+    } 
+    else if (which_friend_pic === 0) {
+        profilePic.src = alienImg;
+    }
+}
+
+
 
 function resetUserDetails() {
     document.getElementById("userDetails").classList.remove("active");
@@ -727,10 +969,10 @@ async function getUserStats(id) {
         const data = await response.json();
 
         if (data.success) {
-            console.log("User ID:", data.user_id);
-            console.log("Victories:", data.victories);
-            console.log("Losses:", data.losses);
-            console.log("Rank:", data.rank);
+           // console.log("User ID:", data.user_id);
+           // console.log("Victories:", data.victories);
+          //  console.log("Losses:", data.losses);
+           // console.log("Rank:", data.rank);
 
 			showUserStats(data.victories, data.losses, data.rank)
         } else {
@@ -814,7 +1056,7 @@ function addFriendRequest() {
     const toUserId = document.getElementById("addFriendButton").getAttribute("data-user-id");
 
     // Vérifie si l'ID est bien récupéré
-	console.log(toUserId);
+	//console.log(toUserId);
 
     if (!toUserId) {
         alert("Erreur : ID utilisateur manquant.");
@@ -844,7 +1086,7 @@ function blockUser() {
 	const toUserId = document.getElementById("blockButton").getAttribute("data-user-id");
 
 	// Vérifie si l'ID est bien récupéré
-	console.log("id utilisateur ->", toUserId);
+//	console.log("id utilisateur ->", toUserId);
 
 	if (!toUserId) {
 		alert("Erreur : ID utilisateur manquant.");
@@ -898,7 +1140,7 @@ async function isUserBlocked(toUserId) {
    })
    .then(response => response.json())
    .then(data => {
-	   console.log("is user blocked:", data.is_blocked);
+	  // console.log("is user blocked:", data.is_blocked);
 	   if (data.success) {
 		   return data.is_blocked; // Retourne True ou False
 	   } else {
@@ -919,7 +1161,7 @@ async function isUserFriend(toUserId) {
    })
    .then(response => response.json())
    .then(data => {
-	   console.log("is user friend:", data.is_friend);
+	//   console.log("is user friend:", data.is_friend);
 	   if (data.success) {
 		   return data.is_friend; // Retourne True ou False
 	   } else {
@@ -936,7 +1178,7 @@ async function isUserFriend(toUserId) {
 function selectUserDisplay(toUserId) {
    Promise.all([isUserBlocked(toUserId), isUserFriend(toUserId)])
 	   .then(([blocked, friend]) => {
-		   console.log("Blocked:", blocked, "| Friend:", friend);
+		   //console.log("Blocked:", blocked, "| Friend:", friend);
 
 		   // Gérer l'affichage du blocage
 		   document.getElementById("ifBlocked").style.display = blocked ? "block" : "none";
@@ -951,7 +1193,7 @@ function showFriendList() {
 //	console.log("je rentre dans la foncition");
 	
 	// Requête AJAX pour obtenir la liste des amis
-	console.log("FUNCTION CCALLED : showFriendList");
+	//console.log("FUNCTION CCALLED : showFriendList");
 	fetch('/showFriendList/')  // URL de ta vue Django
 		.then(response => response.json())  // On transforme la réponse en JSON
 		.then(data => {
@@ -986,7 +1228,7 @@ function showFriendList() {
 function showFriendRequestList() {
 
     // Requête AJAX pour obtenir la liste des demandes d'amis
-	console.log("FUNCTION CCALLED : showFriendRequestList");
+	//console.log("FUNCTION CCALLED : showFriendRequestList");
     fetch('/showFriendRequestList/')  // URL de ta vue Django
         .then(response => {
             //console.log(response);  // Affiche la réponse brute
@@ -1055,13 +1297,41 @@ function getCSRFToken() {
 
 
 
-/*----------------ONLINE-STATUS-------------
-window.addEventListener("beforeunload", function (event) {
-    if (performance.getEntriesByType("navigation")[0].type !== "reload") { 
-        // Type 1 means "refresh" 
-        navigator.sendBeacon("/logoutOnClose/");
-    }
-});*/
+/*----------------ONLINE-STATUS-------------*/
+/*function set_user_status(_online_status)
+{
+	fetch("/set_user_status/", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRFToken": getCSRFToken() // Protection CSRF pour Django
+		},
+		body: JSON.stringify({  // Convertit en JSON
+			online_status: _online_status  
+		})
+	})
+	.catch(error => console.error("Erreur lors de l'envoi:", error));
+}*/
+
+function get_user_status(user_id) {
+	return fetch(`/get_user_status/?to_user_id=${user_id}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"X-CSRFToken": getCSRFToken(),  // Récupère le CSRF token depuis le cookie
+		},
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log("user_id", user_id, "user_staus 1: ", data.user_status);
+		return data.user_status;
+	})
+	.catch(error => {
+		console.error("Erreur lors du get_user_status:", error);
+		return false;	
+	});
+}
+/*----------------ONLINE-STATUS-------------*/
 
 function loggout() {
     fetch('/deconnexion/', {
@@ -1075,7 +1345,7 @@ function loggout() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log("Logout successful!");
+            //console.log("Logout successful!");
             window.location.href = "/login/"; // Redirect after logout
         } else {
             console.error("Logout failed:", data.message);
@@ -1110,7 +1380,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const toUserId = input.getAttribute("data-user-id");
 
 		// Vérifie si l'ID est bien récupéré
-		console.log("ID ->", toUserId);
+		//console.log("ID ->", toUserId);
 
 		if (!toUserId) {
 			alert("Erreur : ID utilisateur manquant.");
@@ -1158,7 +1428,7 @@ function clearChat() {
 }
 
 function fetchMessages() {
-    console.log("Trying to fetch messages!");
+   // console.log("Trying to fetch messages!");
     const toUserId = document.getElementById("sendMessageBar").getAttribute("data-user-id");
     const chat = document.getElementById("userChat");
 
@@ -1179,7 +1449,7 @@ function fetchMessages() {
                 messageDiv.classList.add(msg.sender == toUserId ? "received-message" : "sent-message");
                 messageDiv.textContent = msg.content;
                 chat.appendChild(messageDiv);
-                console.log("New message shown -> ", messageDiv);
+           //      ("New message shown -> ", messageDiv);
 
                 lastMessageTimestamp = msg.timestamp; // Met à jour le dernier timestamp
             });
@@ -1245,6 +1515,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let which_pic = 0; // Variable globale
 
+function select_base_user_pdp() {
+	const userData = document.getElementById("pdp_data");
+
+    const color1 = userData.dataset.color1;
+    const color2 = userData.dataset.color2;
+    const picture = userData.dataset.picture;
+	console.log("color 1 :", color1);
+	console.log("color 2 :", color2);
+	console.log("pic id :", picture);
+
+
+	which_pic = picture - 1;
+	changePDP();
+    const imageContainer = document.getElementById("imageContainer");
+	imageContainer.style.background = `linear-gradient(45deg, ${color1} 0%, ${color2} 100%)`;
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Le DOM est prêt !");
+    select_base_user_pdp();
+});
+
+
 function changePDP() {
     const profilePic = document.getElementById("profilePic");
 
@@ -1280,7 +1574,10 @@ function submitColors() {
 function updateColor1(color) {
     fetch('/update/color_1/', {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"X-CSRFToken": getCSRFToken()  // Ajout du token CSRF // 
+			},
         body: new URLSearchParams({ color_1: color })
     })
     .then(response => response.json())
@@ -1292,7 +1589,10 @@ function updateColor1(color) {
 function updateColor2(color) {
     fetch('/update/color_2/', {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"X-CSRFToken": getCSRFToken()  // Ajout du token CSRF // 
+			},
         body: new URLSearchParams({ color_2: color })
     })
     .then(response => response.json())
@@ -1302,13 +1602,116 @@ function updateColor2(color) {
 
 // Fonction pour mettre à jour la photo de profil (picture)
 function updatePicture(pictureName) {
-    fetch('/update/picture/', {
+    fetch('/update_picture/', {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"X-CSRFToken": getCSRFToken()  // Ajout du token CSRF // 
+			},
         body: new URLSearchParams({ picture: pictureName })
     })
     .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.error("Erreur:", error));
+}
+
+function checkUsernames(usernames, callback) {
+    fetch('/check_usernames_tournament/', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCSRFToken()  // Ajout du token CSRF
+        },
+        body: new URLSearchParams({ usernames: usernames.join(",") })  // Envoi sous forme de string
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            callback(data.all_exist ? 0 : data.missing);
+        } else {
+            console.error("Erreur côté serveur :", data.message);
+            callback(1);
+        }
+    })
+    .catch(error => {
+        console.error("Erreur lors de la vérification des utilisateurs :", error);
+        callback(1);
+    });
+}
+
+
+function registerPlayerTournament() {
+    let players = [];
+    for (let i = 1; i <= 8; i++) {
+        let playerName = document.getElementById(`p${i}_Name`).value.trim();
+        if (playerName !== "") {
+            players.push(playerName);
+        }
+    }
+
+    if (players.length !== 8) {
+        alert("Il doit y avoir exactement 8 joueurs pour commencer le tournoi.");
+        return;
+    }
+
+    // Vérification des pseudos dans la base de données
+    checkUsernames(players, function(missingPlayers) {
+        if (missingPlayers !== 0 && Array.isArray(missingPlayers)) {
+            alert("Les utilisateurs suivants n'existent pas : " + missingPlayers.join(", "));
+            return;
+        } else if (missingPlayers !== 0) {
+            alert("Erreur lors de la vérification des utilisateurs.");
+            return;
+        }
+
+        // Cacher les inputs et le bouton après validation
+        document.getElementById("theTournament8").style.display = "none";
+
+        // Lancer le tournoi
+        launchTournament(players);
+    });
+}
+
+
+
+function launchTournament(players) {
+    console.log("🏁 Début du tournoi !");
+    playTournament(players);
+}
+
+function generateMatches(players) {
+    let matches = [];
+    for (let i = 0; i < players.length; i += 2)
+	{
+        matches.push([players[i], players[i + 1]]);
+    }
+    return matches;
+}
+
+function getWinners(matches) {
+    let winners = [];
+    for (let match of matches)
+	{
+        let winner = Math.floor(Math.random() * 2); // 0 ou 1 aléatoire a remplacer par le match
+        winners.push(match[winner]);
+    }
+    return winners;
+}
+
+function playTournament(players) {
+    let round = 1;
+    while (players.length > 1)
+	{
+        console.log(`⚔️ Tour ${round}:`, players);
+
+
+        let matches = generateMatches(players);
+	
+        console.log("Matchs:", matches);
+
+        players = getWinners(matches);
+        round++;
+    }
+    console.log(`🏆 Le grand vainqueur est : ${players[0]} !`);
 }
 

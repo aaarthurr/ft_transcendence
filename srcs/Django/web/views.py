@@ -31,7 +31,10 @@ def home(request):
     return render(request, 'web/index.html', {
         'nickname': utilisateur.username,  # Passe le pseudo de l'utilisateur
         'friends': friends,  # Passe la liste des amis au template
-        'user_id': utilisateur.id  # Passe l'ID de l'utilisateur au template
+        'user_id': utilisateur.id, # Passe l'ID de l'utilisateur au template
+        "picture": utilisateur.picture,
+        "color1": utilisateur.color_1,
+        "color2": utilisateur.color_2,
     })
 
 
@@ -163,6 +166,7 @@ def get_user_data_from_42(access_token):
     return None
 
 
+
 def inscription(request):
     if request.method == 'POST':
         try:
@@ -202,7 +206,7 @@ def inscription(request):
             # Automatically log in the user
             auth_login(request, utilisateur)
 
-            return JsonResponse({"success": True, "message": "Inscription réussie !"}, status=201)
+            return JsonResponse({"success": True, "message": "Inscription réussie, vous êtes maintenant connecté."}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Invalid JSON format"}, status=400)
@@ -211,8 +215,6 @@ def inscription(request):
             return JsonResponse({"success": False, "message": "Une erreur s'est produite."}, status=500)
 
     return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
-
-
 
 
 
@@ -247,7 +249,7 @@ def connexion(request):
             utilisateur.is_online = True
             utilisateur.save()
 
-            return JsonResponse({"success": True, "message": "Connexion réussie !"}, status=200)
+            return JsonResponse({"success": True, "message": "Connection réussie, vous êtes maintenant connecté."}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message": "Format JSON invalide."}, status=400)
@@ -279,13 +281,31 @@ def search_users(request):
     users = users.exclude(id=current_user.id).exclude(id__in=blocked_by_ids)
 
     user_data = [
-        {"id": user.id, "username": user.username, "is_online": user.is_online}
+        {"id": user.id, "username": user.username, "is_online": user.is_online, "image":user.picture, "color1":user.color_1, "color2":user.color_2}
         for user in users
     ]
     
     return JsonResponse({"users": user_data})
 
+@login_required
+def get_user_info(request):
+    user_id = request.GET.get("user_id")  # Récupère l'ID depuis les paramètres GET
+    if not user_id:
+        return JsonResponse({"error": "ID utilisateur manquant"}, status=400)
 
+    try:
+        user = Utilisateur.objects.get(id=user_id)
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "is_online": user.is_online,
+            "picture": user.picture,
+            "color1": user.color_1,
+            "color2": user.color_2,
+        }
+        return JsonResponse(user_data)
+    except Utilisateur.DoesNotExist:
+        return JsonResponse({"error": "Utilisateur non trouvé"}, status=404)
 
 
 #Gestion des demandes d'ami et autre fonctions social
@@ -737,8 +757,47 @@ def get_player_stats(request):
         "rank": rank
     })
 
+@login_required
+def get_user_status(request):
+    if request.method == "GET":
+        to_user_id = request.GET.get("to_user_id")  # ✅ Get target user ID from request
+        if not to_user_id:
+            return JsonResponse(
+                {"success": False, "message": "ID utilisateur manquant."}, status=400
+            )
 
+        try:
+            to_user = Utilisateur.objects.get(id=to_user_id)
+            return JsonResponse({"success": True, "user_status": to_user.is_online})
 
+        except Utilisateur.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "message": "Utilisateur introuvable."}, status=404
+            )
+
+@login_required
+def get_match_history(request):
+    user = request.user
+    user.match_history
+    print(user.match_history) 
+    return JsonResponse({"match_history": user.match_history}, status=200)
+
+@login_required
+def add_match_history(request):
+    if request.method == "POST":
+        user = request.user
+        try:
+            data = json.loads(request.body)  # Convertit le JSON en dictionnaire Python
+            opponent_username = data.get('opponent_username')
+            result = data.get('result')
+            score_player = data.get('score_player')
+            score_opponent = data.get('score_opponent')
+            user.add_match(opponent_username=opponent_username, result=result, score_player=score_player, score_opponent=score_opponent)
+            return JsonResponse({"success": True, "message": "Match added successfully."}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Invalid JSON format."}, status=400)
+        
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
 @login_required
 def change_password(request):
@@ -834,6 +893,7 @@ def update_picture(request):
 
         user = request.user
         user.picture = picture
+        print(picture)
         user.save()
 
         return JsonResponse({"status": "success", "message": "Image mise à jour.", "picture": picture})
@@ -842,6 +902,16 @@ def update_picture(request):
 
 
 
+@login_required
+def check_usernames_tournament(request):
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Méthode non autorisée."}, status=405)
 
+    usernames = request.POST.get("usernames", "").split(",")
+    if not usernames or usernames == [""]:
+        return JsonResponse({"status": "error", "message": "Aucun pseudo fourni."}, status=400)
 
+    existing_users = set(Utilisateur.objects.filter(username__in=usernames).values_list("username", flat=True))
+    missing_users = [user for user in usernames if user not in existing_users]
 
+    return JsonResponse({"status": "success", "all_exist": not missing_users, "missing": missing_users})

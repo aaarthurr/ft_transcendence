@@ -163,3 +163,5 @@ LOGIN_URL = 'login/'  # Ou l'URL de ta vue de connexion
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
+
+CSRF_TRUSTED_ORIGINS = ["https://localhost"]

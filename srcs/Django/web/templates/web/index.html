@@ -71,7 +71,13 @@
 				<span class="material-symbols-outlined">swords</span>
 				<span class="material-symbols-outlined">Vs Friend</span>
 			</span>
-			<span id="local" onclick="activateFriendMenu()" class="GameOption">
+			
+			<span id="Tournament" onclick="activateTournament()" class="GameOption">
+				<span class="material-symbols-outlined">emoji_events</span>
+				<span class="material-symbols-outlined">Competitions</span>
+			</span>
+
+			<span id="local" onclick="activateLocalGame()" class="GameOption">
 				<span class="material-symbols-outlined">public_off</span>
 				<span class="material-symbols-outlined">Local</span>
 			</span>
@@ -79,6 +85,53 @@
 				<span class="material-symbols-outlined">language</span>
 				<span class="material-symbols-outlined">Online</span>
 			</span>
+			<span id="tournament4"  onclick="activateTournament4()" class="GameOption">
+				<span class="material-symbols-outlined">looks_4</span>
+				<span class="material-symbols-outlined">Volunteers</span>
+			</span>
+
+			<span id="tournament8" onclick="activateTournament8()" class="GameOption">
+				<span class="material-symbols-outlined">looks_8</span>
+				<span class="material-symbols-outlined">Volunteers</span>
+			</span>
+
+			<!-- Zone du tournoi -->
+		<div id="theTournament4" class="theTournament4">
+
+
+				<input type="text" id="p1_name" placeholder="Joueur 1">
+				<input type="text" id="p2_name" placeholder="Joueur 2">
+				<input type="text" id="p3_name" placeholder="Joueur 3">
+				<input type="text" id="p4_name" placeholder="Joueur 4">
+
+				<button class="tournament_button" onclick="registerPlayerTournament()">Prêt</button>
+			</div>
+
+			<!-- Zone du tournoi -->
+		<div id="theTournament8" class="theTournament8">
+
+
+
+
+					<input type="text" id="p1_Name" placeholder="Joueur 1">
+					<input type="text" id="p2_Name" placeholder="Joueur 2">
+					<input type="text" id="p3_Name" placeholder="Joueur 3">
+					<input type="text" id="p4_Name" placeholder="Joueur 4">
+
+
+					
+					<img src="{% static 'web/images/tournament_tree8.png' %}" alt="Tournament tree">
+
+					<input type="text" id="p5_Name" placeholder="Joueur 5">
+					<input type="text" id="p6_Name" placeholder="Joueur 6">
+					<input type="text" id="p7_Name" placeholder="Joueur 7">
+					<input type="text" id="p8_Name" placeholder="Joueur 8">
+			
+			
+					<button class="tournament_button" onclick="registerPlayerTournament()">Prêt</button>
+
+			</div>
+
 		</div></center>
 
 
@@ -93,10 +146,10 @@
 		
 		<div id="GameInvite">
 			<button class="material-symbols-outlined" id="accept" onclick="acceptGameInvite()" ><span>check</span><span>Accept</span></button>
-			<button class="material-symbols-outlined" id="decline" onclick="declineGameInvite()"><span>close</span><span>Decline</span></button>
+			<button class="material-symbols-outlined" id="decline" onclick="declineGameInvite(user_id)"><span>close</span><span>Decline</span></button>
 		</div>
 
-
+		<span id="cant_play"></span>
 		<span class="material-symbols-outlined" id="loading">Waiting for p2 to accept...</span>
 		<div id="winner">
 			<span class="material-symbols-outlined" style="scale: 2">trophy</span>
@@ -148,8 +201,17 @@
 				</button>
 	
 				<h2><span id="userUsername" class="userName"></span></h2>
+				<div class="image-container" id="friendImageContainer">
+					<img src="{% static 'web/images/pdp_alien.png' %}" 
+							alt="friend pdp" 
+							class="pdp" 
+							id="friendProfilePic" 
+							data-male="{% static 'web/images/pdp_male.png' %}" 
+							data-female="{% static 'web/images/pdp_female.png' %}" 
+							data-alien="{% static 'web/images/pdp_alien.png' %}">
+				</div>
 				<div id="ifUnblocked">
-					<p><strong>Online status :</strong> <span id="userStatus"></span></p>
+					<p><strong></strong> <span id="userStatus"></span></p>
 					
 					<div class="userButtonBox">
 					<!-- Bouton Ajouter un ami avec un attribut data pour stocker l'ID -->
@@ -244,13 +306,13 @@
 	
 	<!-- HERE IS THE SETTINGS MENU -->
     <div id="settingsMenu" class="settingsMenu">
+		<div id="pdp_data"
+		data-color1="{{ color1 }}"
+		data-color2="{{ color2 }}"
+		data-picture="{{ picture }}">
+	</div>
         <h1 class="smallerTitle">Settings</h1>
-
-
-        <h2 id="username">{{ request.user.username }}</h2>
-		<h2> {{ request.user.email }}</h2>
-
-
+        <p id="username">Votre Username : {{ request.user.username }}</p>
 		<div class="image-container" id="imageContainer">
 			<img src="{% static 'web/images/pdp_alien.png' %}" 
 					alt="My pdp" 
@@ -262,8 +324,6 @@
 					data-alien="{% static 'web/images/pdp_alien.png' %}">
 		</div>
 
-
-
 		<div class="userButtonBox">
 			<button id="settingInfoButton" 
 					class="addFriendButton" 
@@ -271,9 +331,6 @@
 					<p>Info</p>
 					<span class="material-symbols-outlined icon-smaller">person</span>
 			</button>
-
-
-
 			<button id="statsSettingButton" 
 					class="addFriendButton"
 					data-user-id="{{ request.user.id }}"
@@ -281,31 +338,21 @@
 					<p>Stats</p>
 					<span class="material-symbols-outlined icon-smaller">trophy</span>
 			</button>
-
-
-
 			<button id="SettingsSettingButton" 
 					class="addFriendButton" 
 					onclick="activateSettingsSettings()">
 					<p>Settings</p>
 					<span class="material-symbols-outlined icon-smaller">settings</span>
 			</button>
-
-
 		</div>
-
-
 		
 		<div id="SettingsInfo" style="display: block;">
 			<h1 class="simpleText">Info</h1>
-
-			<h2>Match History</h2>
+			<h2 id="username">{{ request.user.username }}</h2>
+			<h2 class="simpleText"> {{ request.user.email }}</h2>
+			<h2 class="simpleText" id="matchHistory_title">Match History</h2>
+			<ul id="matchHistory" style="overflow-y:scroll; height: 200px;"></ul>
 		</div>
-
-
-
-
-
 		<div id="SettingsStats" style="display: none;">
 			<h1 class="simpleText">Stats</h1>
 			<div class="statsTextWrapper">
@@ -316,14 +363,10 @@
 				<canvas id="winLossChart" class="chartSelf"></canvas>
 			</div>
 		</div>
-
-
-
 		<div id="SettingsSetting"  style="display: none;">
 			<h1 class="simpleText">Settings</h1>
-
-			<input type="color" id="colorPickerA" class="colorPicker">
-			<input type="color" id="colorPickerB" class="colorPicker">
+			<input type="color" id="colorPickerA" class="colorPicker" placeholder="{{ color1 }}">
+			<input type="color" id="colorPickerB" class="colorPicker" placeholder="{{ color2 }}">
 			<button onclick="submitColors()">Enregistrer</button>
 
 			<button class="SettingsSetting_Button" data-target="usernameChangeForm">Change Username</button>
@@ -352,12 +395,15 @@
 			
 
 		<button id="BloodButton" class="SettingsSetting_BloodButton" onclick="bloodMode()">BLOOD MODE OFF</button>
-
+		<button id="basicButton" class="SettingsSetting_BloodButton" onclick="baseMode()">BASIC MODE OFF</button>
 
 			<a style="right: 10px;" href="{% url 'logout' %}" id="logoutButton"><span class="material-symbols-outlined">logout</span></a>
 			
 		</div>
 
+		</div>
+
+        <a href="{% url 'logout' %}" id="logoutButton"><span class="material-symbols-outlined">logout</span></a>
     </div>
 
     

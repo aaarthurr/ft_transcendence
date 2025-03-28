@@ -1,3 +1,13 @@
+function getCSRFToken() {
+    // Recherche le token CSRF dans le cookie ou dans le meta tag (selon ta config Django)
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    return csrfToken;
+}
+
+
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("signupForm");
 
@@ -8,9 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const nickname = form.querySelector("input[name='nickname']").value;
         const password = form.querySelector("input[name='password']").value;
         const confirmPassword = form.querySelector("input[name='confirm_password']").value;
-        const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
 
-		console.log(email, nickname, password, confirmPassword);
+        console.log(email, nickname, password, confirmPassword);
 
         // Check if passwords match before making a request
         if (password !== confirmPassword) {
@@ -24,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken // Django CSRF protection
+                    "X-CSRFToken": getCSRFToken() // Django CSRF protection
                 },
                 body: JSON.stringify({ email, nickname, password, confirm_password: confirmPassword }),
             });
@@ -36,15 +45,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // If the signup is successful, redirect to home
-            alert("Inscription réussie !");
-			window.location.href = "/";
+            // If the signup is successful, show the success message
+            alert(data.message);
+
+            // Now, redirect to the home page
+            window.location.href = "/"; // Redirect to the home page, where user data is fetched
+
         } catch (error) {
             console.error("Erreur lors de l'inscription :", error);
             alert("Une erreur s'est produite. Veuillez réessayer.");
         }
     });
 });
+
 
 
 
@@ -58,14 +71,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const email = loginForm.querySelector("input[name='email']").value;
         const password = loginForm.querySelector("input[name='password']").value;
-        const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
 
         try {
             const response = await fetch("/connexion/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken, // Django CSRF protection
+                    "X-CSRFToken": getCSRFToken(), // Django CSRF protection
                 },
                 body: JSON.stringify({ email, password }),
             });

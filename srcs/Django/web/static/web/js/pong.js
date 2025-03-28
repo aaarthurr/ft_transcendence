@@ -18,8 +18,6 @@ let refresh_rate = 10
 let blood_mode = 0;
 let color = "black"
 let skin = "black"
-
-
 /*------------CLIENT-PLAYER-MOVEMENT----------------------------------------*/
 function move_remote_ball(data)
 {
@@ -211,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		let winText = document.getElementById('winText');
 		let winner = document.getElementById('winner');
 
+		
 		TheGame.classList.remove('active');
 		scoreboard.classList.remove('active');
 		winText.innerText = "";
@@ -234,8 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function drawFrame() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ctx.fillStyle = color;
-
+		ctx.fillStyle = color;
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ball.drawBall();
 		p1.drawPlayer();
@@ -247,8 +245,10 @@ document.addEventListener('DOMContentLoaded', () => {
 				ball.moveBall(p1, p2);
 		if (p1.points === 10 || p2.points == 10)
 		{
+			let result;
 			if (p1.points === 10 && friendtrigger === 1)
 			{
+				result = "win";
 				fetch('/increment_victory/', {
 					method: "POST",
 					headers: {
@@ -259,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 			if (p2.points === 10 && friendtrigger === 1)
 			{
+				result = "lose"
 				fetch('/increment_losses/', {
 					method: "POST",
 					headers: {
@@ -267,6 +268,30 @@ document.addEventListener('DOMContentLoaded', () => {
 					}
 				})
 			}
+			if (friendtrigger === 1)
+			{
+				fetch('/add_match_history/', {
+					method: "POST",
+					headers: {
+						"X-CSRFToken": getCSRFToken(),
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						opponent_username: p2_username,
+						result: result,
+						score_player: p1.points,
+						score_opponent: p2.points,
+					})
+				})
+				.then(reponse => reponse.json())
+				.then(data => {
+					if (data.success) {
+						showMatchHistory(); // Now correctly waits for the fetch response before updating the UI
+					}
+				})
+				.catch(error => console.error("Error updating match history:", error));
+			}
+
 			reInitialize();
 		}
 		document.getElementById("p1-points").innerText = p1.points;
@@ -312,14 +337,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 })
 
+
 function bloodMode() {
     const bloodButton = document.querySelector("#BloodButton"); // Sélectionne le bouton
     if (!bloodButton) return; // Empêche une erreur si le bouton n'existe pas
 
     blood_mode = blood_mode === 0 ? 1 : 0; // Bascule entre 0 et 1
 
+
+
     color = blood_mode ? "#8B0000" : color;
-    skin = blood_mode ? "orange" : color;
+    skin = blood_mode ? "orange" : skin;
 	speed = blood_mode ? 3 : 2;
 
 
@@ -330,16 +358,38 @@ function bloodMode() {
 	console.log("TIME FOR A BLOODY MOON");
 }
 
+let base_mode = 0;
 
+function basicMode() {
+    const basicButton = document.querySelector("#basicButton"); // Sélectionne le bouton
+    if (!basicButton) return; // Empêche une erreur si le bouton n'existe pas
+
+    base_mode = base_mode === 0 ? 1 : 0; // Bascule entre 0 et 1
+
+    basicButton.textContent = base_mode ? "BASE MODE ON" : "BASE MODE OFF";
+}
+/*-----color_picker-----*/
 document.addEventListener("DOMContentLoaded", function () {
     // Sélectionne les color pickers
     const colorPickerA = document.getElementById("colorPickerA");
     const colorPickerB = document.getElementById("colorPickerB");
     const imageContainer = document.getElementById("imageContainer");
 
+
     function updateGradient() {
+
+
         let colorA = colorPickerA.value;
         let colorB = colorPickerB.value;
+
+		if (base_mode === 1)
+			color = colorA;
+			skin = colorB;
+		if (base_mode != 1)
+			color = "black";
+			skin = "black";
+
+
 
         console.log("Couleur A =", colorA);
         console.log("Couleur B =", colorB);

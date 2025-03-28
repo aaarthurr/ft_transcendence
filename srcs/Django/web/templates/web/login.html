@@ -18,17 +18,18 @@
     
 </head>
 <body>
+    <input type="hidden" id="csrfToken" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
-    <div class="mainPage">
+	<div class="mainLoginPage">
 
 		<button class="ApiLoginButton" onclick="connectWithApi()">
 			<img src="{% static 'web/images/42.svg' %}" alt="My Image">
 		</button>
-        
-        <!-- Grand titre -->
-        <h1 class="mainTitle">FT-TRANSCENDENCE</h1>
+		
+		<!-- Grand titre -->
+		<h1 class="mainLoginTitle">FT-TRANSCENDENCE</h1>
 
-        <!-- Cadre avec Welcome et les boutons -->
+		<!-- Cadre avec Welcome et les boutons -->
 		<div class="border-box">
 			<h2 class="welcome-text">WELCOME</h2>
 			<div class="button-container">
@@ -39,7 +40,6 @@
 			<!-- Formulaire de création de compte -->
 			<div id="signupForm" class="signup-form">
 				<form id="signupFormElement">
-					{% csrf_token %}
 					<input type="email" name="email" placeholder="Email" required>
 					<input type="text" name="nickname" placeholder="Nickname" required>
 					<input type="password" name="password" placeholder="Password" required>
@@ -53,7 +53,6 @@
 			<!-- Formulaire de connexion -->
 			<div id="loginForm" class="login-form" style="display: none;">
 				<form id="loginFormElement">
-					{% csrf_token %}
 					<input type="email" name="email" placeholder="Email" required>
 					<input type="password" name="password" placeholder="Password" required>
 					<div>
@@ -61,10 +60,8 @@
 					</div>
 				</form>
 			</div>
-
 		</div>
-
-    </div>
+	</div>
 
 </body>
 </html>

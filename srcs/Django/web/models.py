@@ -3,15 +3,27 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Q
 
-
 class Utilisateur(AbstractUser):
     victory = models.IntegerField(default=0)
     losses  = models.IntegerField(default=0)
     is_online = models.BooleanField(default=False)
+    match_history = models.JSONField(default=list, blank=True)  # Store matches as JSON
     picture = models.IntegerField(default=0)
     color_1 = models.CharField(default="#ffffff")
     color_2 = models.CharField(default="#000000")
-
+	
+    def add_match(self, opponent_username, result, score_player, score_opponent):
+        """
+        Adds a new match to the user's match history.
+        """
+        new_match = {
+            "opponent": opponent_username,
+            "result": result,
+            "score_player": score_player,
+            "score_opponent": score_opponent
+        }
+        self.match_history.append(new_match)
+        self.save()
     def get_friends(self):
         """
         Retourne la liste des amis (demandes acceptées).

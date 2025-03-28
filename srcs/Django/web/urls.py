@@ -7,14 +7,16 @@ urlpatterns = [
     path('login/', views.login, name='login'),  # Route pour afficher la vue `login`
     path('inscription/', views.inscription, name='inscription'), #Route pour commencer l'inscription
     path('connexion/', views.connexion, name='connexion'),
+    
+    path('get_user_info/', views.get_user_info, name='get_user_info'),
 
-
-	path('change_password/', views.change_password, name='change_password'),
-	path('change_username/', views.change_username, name='change_username'),
+    path('change_password/', views.change_password, name='change_password'),
+    path('change_username/', views.change_username, name='change_username'),
 
     path('update/color_1/', views.update_color_1, name='update_color_1'),
     path('update/color_2/', views.update_color_2, name='update_color_2'),
-    path('update/picture/', views.update_picture, name='update_picture'),
+    path('update_picture/', views.update_picture, name='update_picture'),
+
 
 
     path('search_users/', views.search_users, name='search_users'), #pour search bar
@@ -34,19 +36,17 @@ urlpatterns = [
     path('send-message/', views.sendMessage, name='send_message'),
     path('get-messages/', views.getMessages, name='get_messages'),
 
-	path('increment_victory/', views.increment_victory, name='increment_victory'),
-	path('increment_losses/', views.increment_losses, name='increment_losses'),
+    path('increment_victory/', views.increment_victory, name='increment_victory'),
+    path('increment_losses/', views.increment_losses, name='increment_losses'),
 
-	path('get_player_stats/', views.get_player_stats, name='get_player_stats'),
+    path('get_player_stats/', views.get_player_stats, name='get_player_stats'),
 
+    path('get_user_status/', views.get_user_status, name='get_user_status'),
+    path('match-history/', views.get_match_history, name='match_history'),
+    path('add_match_history/', views.add_match_history, name='add_match_history'),
+    path('check_usernames_tournament/', views.check_usernames_tournament, name='check_usernames_tournament/'),
 
-
-
-
-	
-	#API PATH
-	path('auth/42/', views.redirect_to_42, name='auth_42'),
+    #API PATH
+    path('auth/42/', views.redirect_to_42, name='auth_42'),
     path('auth/42/callback/', views.auth_callback, name='auth_callback'),
 ]
-
-

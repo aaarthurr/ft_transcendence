@@ -29,6 +29,7 @@ services:
     env_file:
       - .env
     environment:
+      - DJANGO_SETTINGS_MODULE=mysite.settings 
       - PYTHONUNBUFFERED=1
     volumes:
       - ./Django:/usr/src/app
@@ -48,10 +49,14 @@ services:
     container_name: nginx
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./Django/web/static:/usr/src/app/web/static
     depends_on:
-      - web  # Changer ici de "django" à "web"
+      - web
     networks:
       - transcendence_network
+
 
 volumes:
   postgres_data:

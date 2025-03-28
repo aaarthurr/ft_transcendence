@@ -14,7 +14,7 @@ html, body {
 }
 
 /* Conteneur principal */
-.mainPage {
+.mainLoginPage {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,7 +23,7 @@ html, body {
 }
 
 /* Titre principal */
-.mainTitle {
+.mainLoginTitle {
     font-size: 8vmin;
     font-weight: bold;
     color: #f7f7f7;
