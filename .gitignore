@@ -1,2 +1,4 @@
 *.env
 .srcs/.env
+srcs/nginx/certs/*.crt
+srcs/nginx/certs/*.key
