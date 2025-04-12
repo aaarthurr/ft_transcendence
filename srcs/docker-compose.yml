@@ -35,7 +35,7 @@ services:
       - ./Django:/usr/src/app
       - ./Django/web/static:/usr/src/app/web/static
     ports:
-      - "8000:8000"
+      - "8000"
     depends_on:
       - db
     command: sh -c "sleep 10 && pip install -r requirements.txt && python3 manage.py migrate && daphne mysite.asgi:application -b 0.0.0.0 -p 8000"
@@ -53,10 +53,9 @@ services:
     volumes:
       - ./Django/web/static:/usr/src/app/web/static
     depends_on:
-      - web
+      - web  # Changer ici de "django" à "web"
     networks:
       - transcendence_network
-
 
 volumes:
   postgres_data:

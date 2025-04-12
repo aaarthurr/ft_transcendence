@@ -13,19 +13,69 @@
         <link rel="stylesheet" type="text/css" href="{% static 'web/css/style.css' %}">
         <script type="text/javascript"  src="{% static 'web/js/script.js' %}"></script>
         <script type="text/javascript"  src="{% static 'web/js/pong.js' %}"></script>
+
+		<!-- Lien vers le CSS -->
+		<link rel="stylesheet" type="text/css" href="{% static 'web/css/login.css' %}">
+		<script src="{% static 'web/js/login.js' %}"></script>
+				
 		
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
+<body data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
     <input type="hidden" id="csrfToken" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+	<div class="login-container" id="login" style="display: none;">
+		<div class="mainLoginPage">
+			<button class="ApiLoginButton" onclick="connectWithApi()">
+				<img src="{% static 'web/images/42.svg' %}" alt="My Image">
+			</button>
+			
+			<!-- Grand titre -->
+			<h1 class="mainLoginTitle">TRANSCENDENCE</h1>
+	
+			<!-- Cadre avec Welcome et les boutons -->
+			<div class="border-box">
+				<h2 class="welcome-text">WELCOME</h2>
+				<div class="button-container">
+					<button class="loginButton" onclick="showSignupForm()">Join Us</button>
+					<button class="loginButton" onclick="showLoginForm()">Already Member</button>
+				</div>
+	
+				<!-- Formulaire de création de compte -->
+				<div id="signupForm" class="signup-form">
+					<form id="signupFormElement">
+						<input type="email" name="email" placeholder="Email" maxlength="64" required>
+						<input type="text" name="nickname" placeholder="Nickname" maxlength="64" required>
+						<input type="password" name="password" placeholder="Password" maxlength="64" required>
+						<input type="password" name="confirm_password" placeholder="Confirm Password" maxlength="64" required>
+						<div>
+							<button type="submit" class="submitButton">Créer le compte</button>
+						</div>
+					</form>
+				</div>		
+					
+				<!-- Formulaire de connexion -->
+				<div id="loginForm" class="login-form" style="display: none;">
+					<form id="loginFormElement">
+						<input type="email" name="email" placeholder="Email" maxlength="64" required>
+						<input type="password" name="password" placeholder="Password"  maxlength="64" required>
+						<div>
+							<button type="submit" class="submitButton">Se connecter</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="main-container" id="index" style="display:none">
 
     <!-- MAIN PAGE -->
     <div id="mainPage" class="mainPage">
 		
 		<div id="notif-box" class="hide">
 			<p id="notif-message">Nouvelle notification !</p>
-			<button onclick="hideNotif()">OK</button>
+			<button id="notif-button" onclick="hideNotif()">OK</button>
 		</div>
         <h1 class="mainTitle">TRANSCENDENCE</h1>
         <button class="friendButton" onclick="unscrollToSettingMenu()">
@@ -37,11 +87,10 @@
         </button>
 
         <button class="playButton" onclick="scrollToBottom()">
-            <span class="material-symbols-outlined">play_circle</span>
-            <span class="material-symbols-outlined">PLAY</span>
+			<span class="material-symbols-outlined">play_arrow</span>
         </button>
 
-</div> 
+	</div> 
 
 
     <!-- GAME PAGE -->
@@ -51,7 +100,7 @@
 			</form>
 			<span id="messages" style="color: white;background-color: rgb(255, 0, 0);" ></div>
 			</span>-->
-        <button class="toMainPageButton" onclick="scrollToMainPage()">
+        <button id="toMainPageButton" class="toMainPageButton" onclick="scrollToMainPage()">
             <span class="material-symbols-outlined">keyboard_double_arrow_up</span>
         </button>
 
@@ -61,81 +110,72 @@
             <h2 id="p2-points" style="font-family: 'Poiret One';"></h2>
         </div>
 
+		<select name="difficulty" id="ai-difficulty" class="ai-difficulty">
+			<option value="easy">easy</option>
+			<option value="medium">medium</option>
+			<option value="hard">hard</option>
+		</select>
+
 
 		<center><div id="GameMenu">
+
 			<span id="VsAi" onclick="activateAiGame()" class="GameOption" >
 				<span class="material-symbols-outlined">smart_toy</span>
-				<span class="material-symbols-outlined">Vs Ai</span>
-			</span>
-			<span id="VsFriend" onclick="activateFriendMenu()" class="GameOption">
-				<span class="material-symbols-outlined">swords</span>
-				<span class="material-symbols-outlined">Vs Friend</span>
-			</span>
-			
-			<span id="Tournament" onclick="activateTournament()" class="GameOption">
-				<span class="material-symbols-outlined">emoji_events</span>
-				<span class="material-symbols-outlined">Competitions</span>
+				<span> VS AI</span>
 			</span>
 
 			<span id="local" onclick="activateLocalGame()" class="GameOption">
 				<span class="material-symbols-outlined">public_off</span>
-				<span class="material-symbols-outlined">Local</span>
+				<span> LOCAL</span>
+			</span>
+
+			<span id="VsFriend" onclick="activateFriendMenu()" class="GameOption">
+				<span class="material-symbols-outlined">swords</span>
+				<span> VS FRIEND</span>
+			</span>
+
+			<span id="Tournament" onclick="activateTournament()" class="GameOption">
+				<span class="material-symbols-outlined">emoji_events</span>
+				<span> TOURNAMENT</span>
 			</span>
 			<span id="online" onclick="ShowFriendList_game()" class="GameOption">
 				<span class="material-symbols-outlined">language</span>
-				<span class="material-symbols-outlined">Online</span>
-			</span>
-			<span id="tournament4"  onclick="activateTournament4()" class="GameOption">
-				<span class="material-symbols-outlined">looks_4</span>
-				<span class="material-symbols-outlined">Volunteers</span>
+				<span> ONLINE</span>
 			</span>
 
-			<span id="tournament8" onclick="activateTournament8()" class="GameOption">
-				<span class="material-symbols-outlined">looks_8</span>
-				<span class="material-symbols-outlined">Volunteers</span>
+			<span id="createMenu"  onclick="createTournamentMenu()" class="GameOption">
+				<span class="material-symbols-outlined">lan</span>
+				<span>CREATE</span>
+			</span>
+
+			<span id="joinMenu" onclick="joinTournamentMenu()" class="GameOption">
+				<span class="material-symbols-outlined">arrow_right_alt</span>
+				<span>JOIN</span>
 			</span>
 
 			<!-- Zone du tournoi -->
-		<div id="theTournament4" class="theTournament4">
 
-
-				<input type="text" id="p1_name" placeholder="Joueur 1">
-				<input type="text" id="p2_name" placeholder="Joueur 2">
-				<input type="text" id="p3_name" placeholder="Joueur 3">
-				<input type="text" id="p4_name" placeholder="Joueur 4">
-
-				<button class="tournament_button" onclick="registerPlayerTournament()">Prêt</button>
+			<div id="createPage" class="createPage">
+				<div class="tournamentUserList">
+					<ul id="tournamentPlayersList">
+					</ul>
+				</div>
+				<button class="tounament-button" onclick="launchTournament()">lancer</button>
+				<button class="tounament-button" onclick="deleteTournament()">delete</button>
 			</div>
 
-			<!-- Zone du tournoi -->
-		<div id="theTournament8" class="theTournament8">
 
-
-
-
-					<input type="text" id="p1_Name" placeholder="Joueur 1">
-					<input type="text" id="p2_Name" placeholder="Joueur 2">
-					<input type="text" id="p3_Name" placeholder="Joueur 3">
-					<input type="text" id="p4_Name" placeholder="Joueur 4">
-
-
-					
-					<img src="{% static 'web/images/tournament_tree8.png' %}" alt="Tournament tree">
-
-					<input type="text" id="p5_Name" placeholder="Joueur 5">
-					<input type="text" id="p6_Name" placeholder="Joueur 6">
-					<input type="text" id="p7_Name" placeholder="Joueur 7">
-					<input type="text" id="p8_Name" placeholder="Joueur 8">
-			
-			
-					<button class="tournament_button" onclick="registerPlayerTournament()">Prêt</button>
-
+			<div id="joinPage" class="joinPage">
+				<div class="tournamentUserList">
+					<ul id="tournamentListJoin">
+					</ul>
+				</div>
+				<button class="tounament-button" onclick="quitTournament()">quitter</button>
 			</div>
 
 		</div></center>
 
-
-		<h1 id="FriendTitle" class="material-symbols-outlined" style="color: white; font-family: 'Poiret One', serif">Friend List</h1>
+		<h1 id="FriendTitle" class="material-symbols-outlined" style="color: white; font-family: 'Poiret One', serif; position: absolute; top:10%;">Friend List</h1>
 		<div class="friendList">
 				<ul id = "friendList"></ul>
 		</div>
@@ -145,12 +185,12 @@
 
 		
 		<div id="GameInvite">
-			<button class="material-symbols-outlined" id="accept" onclick="acceptGameInvite()" ><span>check</span><span>Accept</span></button>
-			<button class="material-symbols-outlined" id="decline" onclick="declineGameInvite(user_id)"><span>close</span><span>Decline</span></button>
-		</div>
+            <button id="accept" onclick="acceptGameInvite()" ><span class="material-symbols-outlined">check</span><span>Accept</span></button>
+            <button id="decline" onclick="declineGameInvite(user_id)"><span class="material-symbols-outlined">close</span><span>Decline</span></button>
+        </div>
 
-		<span id="cant_play"></span>
-		<span class="material-symbols-outlined" id="loading">Waiting for p2 to accept...</span>
+        <span id="cant_play"></span>
+        <span class="material-symbols-outlined" id="loading">Waiting for p2 to accept...</span>
 		<div id="winner">
 			<span class="material-symbols-outlined" style="scale: 2">trophy</span>
 			<span id="winText" class="material-symbols-outlined"></span>
@@ -165,9 +205,6 @@
 		</div>
 
 
-    </div>
-
-
 <!-- HERE IS THE FRIEND MENU -->
 	<div id="friendMenu" class="friendMenu">
 			<h1 class="smallerTitle">Friends</h1>
@@ -175,7 +212,8 @@
 				type="text" 
 				id="searchBar" 
 				placeholder="Rechercher un ami..."
-				oninput="searchFriends()" 
+				oninput="searchFriends()"
+				maxlength="64"
 			/>
 			<ul id="results"></ul>  <!-- Affichage des résultats de recherche -->
 	
@@ -245,7 +283,7 @@
 						<button id="sendGameButton" 
 							class="sendGameButton" 
 							data-user-id="" 
-							onclick="addFriendRequest()">
+							onclick='ChallengeFriend(document.getElementById("userUsername").innerText); scrollToBottom()'>
 							<p>Jouer</p>
 						</button>
 						<div class="chat_zone">	
@@ -254,8 +292,8 @@
 							<input id="sendMessageBar" 
 								type="text" 
 								placeholder="Votre message..."
-								data-user-id="" 
-								oninput="searchFriends()" />
+								data-user-id=""
+								maxlength="200" />
 						</div>
 					</div>
 					<div id="ifNotFriend">
@@ -294,15 +332,7 @@
 
 			</div>
 		</div>
-	
-	
-	
-	
-		
-	</div>
-	
-		
-	
+
 	
 	<!-- HERE IS THE SETTINGS MENU -->
     <div id="settingsMenu" class="settingsMenu">
@@ -312,8 +342,8 @@
 		data-picture="{{ picture }}">
 	</div>
         <h1 class="smallerTitle">Settings</h1>
-        <p id="username">Votre Username : {{ request.user.username }}</p>
 		<div class="image-container" id="imageContainer">
+			<span class="material-symbols-outlined icon-hover" onclick="changePDP()">edit</span>
 			<img src="{% static 'web/images/pdp_alien.png' %}" 
 					alt="My pdp" 
 					class="pdp" 
@@ -348,10 +378,10 @@
 		
 		<div id="SettingsInfo" style="display: block;">
 			<h1 class="simpleText">Info</h1>
-			<h2 id="username">{{ request.user.username }}</h2>
-			<h2 class="simpleText"> {{ request.user.email }}</h2>
+			<h2 class="user-info" id="username">username: {{ request.user.username }}</h2>
+			<h2 class="user-info">email: {{ request.user.email }}</h2>
 			<h2 class="simpleText" id="matchHistory_title">Match History</h2>
-			<ul id="matchHistory" style="overflow-y:scroll; height: 200px;"></ul>
+			<ul id="matchHistory" style="overflow-y:scroll; overflow-x:scroll; height: 200px; padding: 0;"></ul>
 		</div>
 		<div id="SettingsStats" style="display: none;">
 			<h1 class="simpleText">Stats</h1>
@@ -367,27 +397,29 @@
 			<h1 class="simpleText">Settings</h1>
 			<input type="color" id="colorPickerA" class="colorPicker" placeholder="{{ color1 }}">
 			<input type="color" id="colorPickerB" class="colorPicker" placeholder="{{ color2 }}">
-			<button onclick="submitColors()">Enregistrer</button>
+			<button class="simple-button" onclick="submitColors()">Enregistrer</button>
 
 			<button class="SettingsSetting_Button" data-target="usernameChangeForm">Change Username</button>
-			<form id="usernameChangeForm" action="/change_username/" method="POST" style="display: none;">
-			  {% csrf_token %}
-			  <input type="text" name="username" placeholder="Change Username" required>
-			  <input type="text" name="confirm_username" placeholder="Confirm Username" required>
-			  <button type="submit">Changer Username</button>
-			  <button type="button" class="cancelButton" data-target="usernameChangeForm">Annuler</button>
-			</form>
-
-
-
-			<button class="SettingsSetting_Button" data-target="passwordChangeForm">Change Password</button>
-			<form id="passwordChangeForm" action="/change_password/"  method="POST" style="display: none;">
-			  {% csrf_token %}
-			  <input type="password" name="password" placeholder="Change Password" required>
-			  <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-			  <button type="submit">Changer Password</button>
-			  <button type="button" class="cancelButton" data-target="passwordChangeForm">Annuler</button>
-			</form>
+			<form id="usernameChangeForm" action="/change_username/" method="POST" style="display: none;" >
+				{% csrf_token %}
+				<input type="text" name="username" placeholder="Change Username" required class="addFriendButton" style="cursor: auto;">
+				<input type="text" name="confirm_username" placeholder="Confirm Username" required class="addFriendButton" style="cursor: auto;">
+				<br>
+				<button type="submit" class="addFriendButton" style="width: auto;">Changer Username</button>
+				<button type="button" class="cancelButton" data-target="usernameChangeForm">Annuler</button>
+			  </form>
+  
+  
+  
+			  <button class="SettingsSetting_Button" data-target="passwordChangeForm">Change Password</button>
+			  <form id="passwordChangeForm" action="/change_password/"  method="POST" style="display: none;">
+				{% csrf_token %}
+				<input type="password" name="password" placeholder="Change Password" required class="addFriendButton" style="cursor: auto;">
+				<input type="password" name="confirm_password" placeholder="Confirm Password" required class="addFriendButton" style="cursor: auto;">
+				<br>
+				<button type="submit" class="addFriendButton" style="width: auto;">Changer Password</button>
+				<button type="button" class="cancelButton" data-target="passwordChangeForm">Annuler</button>
+			  </form>
 
 
 
@@ -395,18 +427,18 @@
 			
 
 		<button id="BloodButton" class="SettingsSetting_BloodButton" onclick="bloodMode()">BLOOD MODE OFF</button>
-		<button id="basicButton" class="SettingsSetting_BloodButton" onclick="baseMode()">BASIC MODE OFF</button>
 
-			<a style="right: 10px;" href="{% url 'logout' %}" id="logoutButton"><span class="material-symbols-outlined">logout</span></a>
-			
+		<a class="logout-button" href="{% url 'logout' %}" id="logoutButton"> Logout <span class="material-symbols-outlined icon-smaller">logout</span></a>
 		</div>
 
 		</div>
-
-        <a href="{% url 'logout' %}" id="logoutButton"><span class="material-symbols-outlined">logout</span></a>
     </div>
+</div>
 
     
+<div id="waitingPage" class="waitingPage">
+	<h1>Veuillez attendre les autres joueurs</h1>
+</div>
 
 
 </body>

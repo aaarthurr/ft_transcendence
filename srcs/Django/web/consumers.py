@@ -17,7 +17,10 @@ class WebConsumer(AsyncWebsocketConsumer):
 
         # On accepte la connexion WebSocket
         await self.accept()
-
+    async def initialize_opponent(self, event):
+        """Initialize the opponent ID for the WebSocket connection."""
+        self.opponent_id = event["opponent_id"]
+        print(f"Opponent ID initialized: {self.opponent_id}")
     async def receive(self, text_data):
         # Juste pour debugger
         data = json.loads(text_data)
@@ -31,18 +34,35 @@ class WebConsumer(AsyncWebsocketConsumer):
                     "data": data
                 }
             )
-
+    async def opponent_disconnected(self, event):
+        """Send a notification to the client about the opponent's disconnection."""
+        await self.send(text_data=json.dumps({
+            "type": "opponent_disconnected",
+            "message": event.get("message", "Your opponent has disconnected."),
+        }))
     async def disconnect(self, close_code):
         # Quand l'utilisateur se déconnecte, on le retire du groupe et met à jour son statut
         await self.update_online_status(False)
+        if self.opponent_id:
+            await self.channel_layer.group_send(
+                f"user_{self.opponent_id}",  # Opponent's group name
+                {
+                    "type": "opponent_disconnected",
+                    "message": "Your opponent has disconnected.",  # Optional message
+                },
+            )
+        else:
+            print("⚠️ Aucuns adversaires connectés pour envoyer la notification.")
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def update_lists(self, event):
         """Envoie une mise à jour de la liste d'amis au client."""
         await self.send(text_data=json.dumps({
             "type": "update_lists",
-            "message": event.get("message", "Votre liste d'amis a été mise à jour.")
+            "message": event.get("message", "Votre liste d'amis a été mise à jour."),
+            "user_id": event.get("user_id")
         }))
+
 
     async def update_messages(self, event):
         """Envoie une mise à jour de la liste d'amis au client."""
@@ -55,16 +75,6 @@ class WebConsumer(AsyncWebsocketConsumer):
         data = event['data']
         await self.send(text_data=json.dumps(data))
 
-        # This method receives the event from group_send.
-        
-        # If you want to send the input only to the host, you could check a property.
-        # For example, if your host client sets a flag (or you maintain a mapping in memory),
-        # you could do something like:
-        # if data.get('target') == 'host' and not self.is_host:
-        #     return  # Skip sending if this client is not the host
-        
-        # Otherwise, broadcast the input to this client.
-
     async def update_online_status(self, status: bool):
         """Update the user's online status in the database."""
         # We use `Utilisateur` here assuming that's the model you're using for users.
@@ -75,3 +85,32 @@ class WebConsumer(AsyncWebsocketConsumer):
             await sync_to_async(user.save)()  # Save the status asynchronously
         except Utilisateur.DoesNotExist:
             print(f"⚠️ Utilisateur with ID {self.user_id} not found.")
+
+
+    async def match_tournament(self, event):
+        """Envoie les informations du match aux joueurs."""
+        await self.send(text_data=json.dumps({
+            "type": "match_tournament",
+            "tournament_id": event.get("tournament_id"),
+            "is_hosting": event.get("is_hosting"),
+            "user": event.get("user"),
+            "opponent": event.get("opponent"),  # Envoie les infos de l'adversaire
+            "round": event.get("round"),
+        }))
+
+
+
+    async def notify_join_tournament(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "notify_join_tournament",
+            "tournament_id" : event.get("tournament_id"),
+            "is_hosting" : event.get("is_hosting"),
+            "message": event.get("message"),
+        }))
+        
+    async def new_tournament(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "new_tournament",
+            "tournament_id" : event.get("tournament_id"),
+            "message": event.get("message"),
+        }))

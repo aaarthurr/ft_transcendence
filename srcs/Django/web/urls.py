@@ -3,8 +3,9 @@ from django.conf import settings
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),  # Route pour afficher la vue `home`
-    path('login/', views.login, name='login'),  # Route pour afficher la vue `login`
+	path('', views.home, name='home'),  # Route pour afficher la vue `home`
+    path('home/', views.home, name='home'),  # Route pour afficher la vue `home`
+
     path('inscription/', views.inscription, name='inscription'), #Route pour commencer l'inscription
     path('connexion/', views.connexion, name='connexion'),
     
@@ -44,9 +45,31 @@ urlpatterns = [
     path('get_user_status/', views.get_user_status, name='get_user_status'),
     path('match-history/', views.get_match_history, name='match_history'),
     path('add_match_history/', views.add_match_history, name='add_match_history'),
-    path('check_usernames_tournament/', views.check_usernames_tournament, name='check_usernames_tournament/'),
+    path('connect_match/', views.connect_match, name='connect_match'),
+
 
     #API PATH
     path('auth/42/', views.redirect_to_42, name='auth_42'),
     path('auth/42/callback/', views.auth_callback, name='auth_callback'),
+
+
+	path('create_tournament/', views.create_tournament, name='create_tournament'), #pour search bar
+	path('delete_tournament/', views.delete_tournament, name='delete_tournament'), #pour search bar
+
+	path('join_tournament/', views.join_tournament, name='join_tournament'), #pour search bar
+	path('quitTournament/', views.quitTournament, name='quitTournament'), #pour search bar
+
+
+	path('get_all_tournaments/', views.get_all_tournaments, name='get_all_tournaments'), 
+	path('get_tournament_players/', views.get_tournament_players, name='get_tournament_players'),
+	path('launch_tournament/', views.launch_tournament, name='launch_tournament'),
+	path('secondRound/', views.secondRound, name='secondRound'),
+	path('lastRound/', views.lastRound, name='lastRound'),
+
+	path('secondRoundLoose/', views.secondRoundLoose, name='secondRoundLoose'),
+	path('lastRoundLoose/', views.lastRoundLoose, name='lastRoundLoose'),
+
+	path('finishTournament/', views.finishTournament, name='finishTournament'),
+
+	
 ]

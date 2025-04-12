@@ -37,3 +37,17 @@ makemigrations:
 shell:
 	@echo "Opening Django shell..."
 	$(DOCKER_COMPOSE) exec web python manage.py shell
+
+fake:
+	$(DOCKER_COMPOSE) exec web python manage.py migrate web --fake
+
+zero:
+	$(DOCKER_COMPOSE) exec web  python manage.py migrate web zero
+	rm -rf web/migrations/*
+	$(DOCKER_COMPOSE) exec web  python manage.py makemigrations web
+	$(DOCKER_COMPOSE) exec web  python manage.py migrate
+
+show: 
+	$(DOCKER_COMPOSE) exec web  python manage.py showmigrations web
+post:
+	docker exec -it mypostgresdb psql -U myuser -d postgres

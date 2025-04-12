@@ -1,25 +1,23 @@
-function getCSRFToken() {
-    // Recherche le token CSRF dans le cookie ou dans le meta tag (selon ta config Django)
-    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-    return csrfToken;
-}
-
-
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("signupForm");
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault(); // Prevent default form submission
 
-        const email = form.querySelector("input[name='email']").value;
-        const nickname = form.querySelector("input[name='nickname']").value;
-        const password = form.querySelector("input[name='password']").value;
-        const confirmPassword = form.querySelector("input[name='confirm_password']").value;
-
-        console.log(email, nickname, password, confirmPassword);
+		const email = form.querySelector("input[name='email']").value;
+		const nickname = form.querySelector("input[name='nickname']").value;
+		const password = form.querySelector("input[name='password']").value;
+		const confirmPassword = form.querySelector("input[name='confirm_password']").value;
+		
+		const inputs = [email, nickname, password, confirmPassword];
+		
+		for (let input of inputs) {
+			if (input.length > 64) {
+				alert(`Le champ "${input.name}" ne peut pas dépasser 64 caractères.`);
+				return false;
+			}
+		}
+		
 
         // Check if passwords match before making a request
         if (password !== confirmPassword) {
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert(data.message);
 
             // Now, redirect to the home page
-            window.location.href = "/"; // Redirect to the home page, where user data is fetched
+            window.location.href = "/home"; // Redirect to the home page, where user data is fetched
 
         } catch (error) {
             console.error("Erreur lors de l'inscription :", error);
@@ -57,9 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-
-
 
 
 
@@ -71,6 +66,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const email = loginForm.querySelector("input[name='email']").value;
         const password = loginForm.querySelector("input[name='password']").value;
+
+		const inputs = [email, password];
+
+		for (let input of inputs) {
+			if (input.value.length > 64) {
+				alert(`Le champ "${input.name}" ne peut pas dépasser 64 caractères.`);
+				return false;
+			}
+		}
+
 
         try {
             const response = await fetch("/connexion/", {
@@ -90,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             alert("Connexion réussie !");
-            window.location.href = "/"; // Redirect on success
+            window.location.href = "/home"; // Redirect on success
         } catch (error) {
             console.error("Erreur lors de la connexion :", error);
             alert("Une erreur s'est produite. Veuillez réessayer.");

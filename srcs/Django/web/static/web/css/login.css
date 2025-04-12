@@ -1,18 +1,3 @@
-/*---------------------------------------- ELEMENT PRINCIPAUX---------------------------*/
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: rgb(29, 29, 29); /* Fond noir */
-    color: #f7f7f7; /* Texte blanc cassé */
-    font-family: 'Poiret One', serif; /* Typographie principale */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
 /* Conteneur principal */
 .mainLoginPage {
     display: flex;
@@ -20,6 +5,7 @@ html, body {
     justify-content: center;
     align-items: center;
     width: 100%;
+	height: 100%;
 }
 
 /* Titre principal */
@@ -37,7 +23,7 @@ html, body {
 .border-box {
     border: 2px solid #f7f7f7;
     padding: 30px;
-    width: 100%;
+    width: 70%;
     min-width: 300px;
     display: flex;
     flex-direction: column;

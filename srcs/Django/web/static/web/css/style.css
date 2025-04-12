@@ -2,12 +2,30 @@
 
 /*---------------------------------------- ELEMENT PRINCIPAUX---------------------------*/
 
+
 html, body {
-    margin: 0; /* Supprime les marges par défaut du navigateur */
-    padding: 0; /* Supprime les espacements internes par défaut */
-    height: 100%; /* Fait en sorte que html et body occupent toute la hauteur de la fenêtre */
-    overflow: hidden; /* Désactive les barres de défilement */
-}
+	margin: 0;
+	padding: 0;
+	height: 100%;
+  }  
+
+
+.login-container {
+	height: 100%;
+	background-color: rgb(29, 29, 29); /* Dark background */
+	color: #f7f7f7; /* Light text */
+	font-family: 'Poiret One', serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+  }
+
+  
+  .main-container {
+	height: 100%;
+	overflow: hidden; /* or adjust this depending on your scrolling needs */
+  }
 
 .mainPage, .bottomPage
 {
@@ -175,7 +193,7 @@ html, body {
 }
 
 /* Élément de la liste */
-#results button, #friendList button {
+#results button{
     font-size: 15px;
 	font-weight: normal;
     font-family: 'Poiret One', serif;
@@ -201,7 +219,7 @@ html, body {
     flex: 0.5; /* Tous les boutons se rétrécissent légèrement */
 }
 
-#results button:hover , #friendList button:hover{
+#results button:hover {
 	font-weight: bolder;
     flex: 3; /* Le bouton survolé grandit */
     max-width: 50%; /* S'étend jusqu'à 80% si possible */
@@ -259,6 +277,7 @@ html, body {
     transition: transform 0.5s ease, opacity 0.5s ease; /* Animation fluide */
     transform: translateX(-100%); /* Cache le panneau entièrement hors écran */
 }
+
 .userStats.active {
     transform: translateX(0); /* Fait glisser le panneau à l'écran */
     opacity: 1; /* Le rend visible */
@@ -333,13 +352,14 @@ html, body {
 
 #friend-list {
 	display: flex;
+	flex-direction: row;
     flex-wrap: wrap; /* Permet aux éléments de passer à la ligne si nécessaire */
     justify-content: space-between; /* Répartit l'espace de manière équilibrée */
     background-color: none; /* Pour voir où l'élément se trouve */
     padding: 10px;
 }
 
-#friend-list button {
+#friend-list button, #friendList button {
     font-size: 15px;
     font-family: 'Poiret One', serif;
     flex: 1 1 calc(25% - 10px); /* Prend 25% de la largeur moins l'espace entre les éléments */
@@ -357,7 +377,7 @@ html, body {
     text-align: center;
 }
 
-#friend-list button:hover {
+#friend-list button:hover , #friendList button:hover{
 	font-weight: bolder;
     color: #191919;
     background-color: #f7f7f7;
@@ -437,6 +457,7 @@ html, body {
     transition: transform 0.5s ease, opacity 0.5s ease; /* Animation fluide */
     z-index: 1000; /* Assure que le menu soit au-dessus des autres éléments */
 }
+
 .image-container {
 	border: 2px solid #ffffff;
     position: absolute;
@@ -447,8 +468,9 @@ html, body {
     height: 75px;
     border-radius: 50%;
     background-color: white; /* Default color */
-    display: flex;
-    align-items: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .pdp {
@@ -457,6 +479,10 @@ html, body {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .colorPicker {
@@ -614,7 +640,7 @@ height: auto !important;
 }
 
 /*friend BUTTON SETUP*/
-.addFriendButton
+.cancelButton
 {
 	display: flex;  /* Active Flexbox */
     align-items: center; /* Centre verticalement */
@@ -626,7 +652,6 @@ height: auto !important;
 
 	font-size: 1.2em; /* 1.2 fois la taille de la police de l'élément parent */
 	border-radius: 10px;
-	width: 100%;
 	height: 40%;
 	padding: 0;
 
@@ -642,45 +667,66 @@ height: auto !important;
     margin: 0 5px;  /* Espace entre les boutons */
 }
 
+.addFriendButton {
+    display: flex;                   /* Active Flexbox */
+    align-items: center;             /* Centre verticalement */
+    justify-content: center;         /* Centre horizontalement (optionnel) */
+    background-color: #191919;       /* Enlève le fond blanc moche */
+    font-family: 'Poiret One', serif; /* Définit la police du texte */
+    color: #ffffff;                  /* Couleur du texte */
+    font-size: 1.2em;                /* Taille de la police */
+    border-radius: 10px;
+    height: 40%;                     /* Hauteur des boutons */
+    padding: 0;
+    line-height: auto;
+    border: 2px solid #ffffff;
+    cursor: pointer;                /* Change le curseur pour indiquer que c'est cliquable */
+    transition: 0.3s ease;           /* Transition pour l'effet de hover */
+    
+    flex-grow: 1;                    /* Les boutons prennent toute la largeur disponible de manière égale */
+    flex-shrink: 1;                  /* Permet aux boutons de se rétrécir si nécessaire */
+    margin: 0 5px;                   /* Espacement entre les boutons */
+    min-width: 0;                    /* Permet aux boutons de réduire leur taille sans causer de débordement */
+    text-overflow: ellipsis;         /* Ajoute des points de suspension si le texte dépasse */
+    white-space: nowrap;             /* Empêche le texte de passer à la ligne */
+    overflow: hidden;                /* Cache tout texte qui dépasse */
+}
 
 .addFriendButton:hover {
-    transform: scale(1.1); /* Agrandit légèrement l'élément */
+    transform: scale(1.05); /* Réduit l'agrandissement pour éviter que le bouton soit trop gros */
 }
 
-/*Block BUTTON SETUP*/
-.blockButton
-{
-	display: flex;  /* Active Flexbox */
-    align-items: center; /* Centre verticalement */
-    justify-content: center; /* Centre horizontalement (optionnel) */
-
-	background-color: #191919; /*permet d'enlever le fond blanc moche*/
-	font-family: 'Poiret One', serif;/*defini la police du texte*/
-	color: #ffffff; /* Définit une couleur de title en noir (optionnel) */	
-
-	font-size: 1.2em; /* 1.2 fois la taille de la police de l'élément parent */
-	border-radius: 10px;
-	width: 100%;
-	height: 40%;
-	padding: 0;
-
-	line-height: auto;
-
-	border: 2px solid #ffffff;
-	border-color: white;
-
-	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
-    transition: 0.3s ease;  /* Transition pour l'effet de hover */
-
-	flex-grow: 1; /* Fait en sorte que les boutons prennent toute la largeur disponible de manière égale */
-    margin: 0 5px;  /* Espace entre les boutons */
+.blockButton {
+    display: flex;                    /* Active Flexbox */
+    align-items: center;              /* Centre verticalement */
+    justify-content: center;          /* Centre horizontalement (optionnel) */
+    background-color: #191919;        /* Enlève le fond blanc moche */
+    font-family: 'Poiret One', serif; /* Définit la police du texte */
+    color: #ffffff;                   /* Définit une couleur de texte en blanc */
+    font-size: 1.2em;                 /* Taille de la police (1.2x par rapport à la police de l'élément parent) */
+    border-radius: 10px;              /* Bords arrondis */
+    height: 40%;                      /* Hauteur des boutons */
+    padding: 0;
+    line-height: auto;
+    border: 2px solid #ffffff;
+    cursor: pointer;                 /* Change le curseur pour indiquer que c'est cliquable */
+    transition: 0.3s ease;            /* Transition pour l'effet de hover */
+    
+    flex-grow: 1;                     /* Les boutons prennent toute la largeur disponible de manière égale */
+    flex-shrink: 1;                   /* Permet aux éléments de se réduire si l'espace est trop petit */
+    margin: 0 5px;                    /* Espacement entre les boutons */
+    min-width: 0;                     /* Permet aux éléments de se réduire sans débordement */
+    overflow: hidden;                 /* Cache le contenu qui dépasse */
+    text-overflow: ellipsis;          /* Ajoute des points de suspension si le texte dépasse */
+    white-space: nowrap;              /* Empêche le texte de passer à la ligne */
 }
 
 
 .blockButton:hover {
-    background-color: #b30000; /*change la couleur de fond quand on clique */
-    transform: scale(1.1); /* Agrandit légèrement l'élément */
+    background-color: #b30000;        /* Change la couleur de fond quand on clique */
+    transform: scale(1.05);            /* Réduit l'agrandissement pour éviter que le bouton soit trop gros */
 }
+
 
 /*friend BUTTON SETUP*/
 .sendGameButton {
@@ -853,6 +899,21 @@ height: auto !important;
     opacity: 1; /* Assure que le placeholder est bien visible */
 }
 
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+    100% { transform: translateX(0); }
+}
+
+#sendMessageBar.limite {
+    border: 2px solid #e00000 !important;
+    animation: shake 0.4s ease-in-out 1; /* L'animation ne se joue qu'une seule fois */
+}
+
+
 /*END OF friends BUTTON SETUP*/
 
 
@@ -885,24 +946,41 @@ height: auto !important;
 /*LOGOUT-BUTTON*/
 #logoutButton
 {
+	font-family: 'Poiret One', serif;
     position: absolute;
-    bottom: 10px;
+    bottom: 30px;
     right: 10px;
+	font-size: 20px;
+
+	color: #f7f7f7;  /* Set your desired color */
+    text-decoration: none; /* Remove underline */
+
+	display: flex;
+    align-items: center; /* Aligne verticalement */
+    gap: 5px; /* Espacement entre le texte et l'icône */
+	transition: transform 0.5s ease-in-out, border-bottom 0.5s ease-in-out;
+}
+
+#lougoutButton:hover {
+	transform: scale(1.1);
+	border-bottom: #f7f7f7;
+
 }
 /*------------*/
 
 
 /*---------------------------------------- ELEMENT SECONDAIRE DE MAIN PAGE---------------------------*/
-.mainTitle
-{
-	font-family: 'Poiret One', serif;/*defini la police du texte*/
-	color: #f7f7f7; /* Définit une couleur de title en blanc casse (optionnel) */
+.mainTitle {
+    font-family: 'Poiret One', serif; /* Define font */
+    color: #f7f7f7; /* Light white */
     font-weight: bold;
     letter-spacing: 5px;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
-	size: 200%;
+    font-size: 200%; /* Use font-size instead of 'size' (which is invalid) */
+    transition: text-shadow 1.5s ease-in-out;
+    cursor: default;
+	gap: 0;
 }
-
 
 /*play BUTTON SETUP*/
 .playButton
@@ -910,19 +988,40 @@ height: auto !important;
 	background-color: transparent; /*permet d'enlever le fond blanc moche*/
 	font-family: 'Poiret One', serif;/*defini la police du texte*/
 	color: #000000; /* Définit une couleur de title en noir (optionnel) */
-	border: none; /*enleve l'effet de bordure moche de base en html*/
-    border-radius: 5px; /* ajoute un effet pour smooth les bords*/
-
-	
+    border-radius: 50px; /* ajoute un effet pour smooth les bords*/
+	border: solid 3px #f7f7f7;
+    width: 80px; /* Use viewport width for responsiveness */
 
 	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
-    transition: transform 0.3s ease, color 0.3s ease;  /* Transition pour l'effet de hover */
+    transition: background-color 0.3s ease;  /* Transition pour l'effet de hover */
+	transition: width 0.3s ease;
 }
 
 .playButton:hover {
+	width: 240px;
     background-color: #3d3d3d; /*change la couleur de fond quand on clique */
-    transform: scale(1.05); /* Agrandit légèrement l'élément */
 }
+
+.simple-button {
+	background-color: transparent; /*permet d'enlever le fond blanc moche*/
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #f7f7f7; /* Définit une couleur de title en noir (optionnel) */
+    border-radius: 5px; /* ajoute un effet pour smooth les bords*/
+	border: solid 2px #f7f7f7;
+	width: auto;
+	height: auto;
+	padding: 3px;
+
+	cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: background-color 0.3s ease;  /* Transition pour l'effet de hover */
+	transition: transform 0.3s ease;
+}
+
+.simple-button:hover {
+	transform: scale(1.1);
+    background-color: #3d3d3d; /*change la couleur de fond quand on clique */
+}
+
 /*END OF play BUTTON SETUP*/
 
 
@@ -937,14 +1036,6 @@ height: auto !important;
 /*game css SETUP*/
 
 /*MENU*/
-#test
-{
-	overflow-y: auto;
-	top:50%;
-	height: 10px;
-	position: absolute;
-}
-
 .GameOption:hover
 {
 	background-color: rgba(255, 255, 255, 0.265);
@@ -954,39 +1045,88 @@ height: auto !important;
 .GameOption
 {
 	display:flex;
-	border: none;
+	align-content: center;
+	justify-content: center;
+	border: solid 3px #f7f7f7;
 	cursor: pointer;
 	transition: transform 0.5s ease, opacity 0.5s ease;
 	background-color: transparent;
 	padding:10px;
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	color: #f7f7f7; /* Définit une couleur de title en noir (optionnel) */
+	font-size: 54px;
+	font-weight: bold;
+}
+
+#friendList
+{
+	border-radius: 5px;
+	border-color: white;
+	height: 60vw;
+	max-height: 213px;
+	display: flex;
+    flex-direction: column;
+	overflow-y: scroll;
+  	width: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+#friendList button
+{
+	border: none;
 }
 
 .friendList
 {
+	width: 60vw;
+	max-width: 300px;
 	opacity: 0;
     visibility: hidden;
-	border-radius: 5px;
-	border-color: white;
-	max-height: 300px;;
-	height :60vw;
-	gap: 10px;
 	display: flex;
-    align-items: center;
-    flex-direction: column;
+	align-items: center;
+ 	border-radius: 5px;
+ 	border: outset white;
 }
 
-#local, #online, #tournament4,#tournament8, #theTournament4, #theTournament8, #FriendTitle
+#local, #online, #joinMenu,#createMenu, #joinPage, #createPage, #FriendTitle
 {
 	opacity: 0;
     visibility: hidden;
 	display: none;
 }
 
-#local.active,#online.active, .friendList.active, #FriendTitle.active,#tournament4.active, #tournament8.active, #theTournament4.active, #theTournament8.active
+#local.active,#online.active, .friendList.active, #FriendTitle.active,#joinMenu.active, #createMenu.active, #joinPage.active, #createPage.active
 {
 	display: flex;
 	opacity: 100;
     visibility:visible;
+}
+
+
+.waitingPage {
+	display: none;
+	visibility: hidden;
+    opacity: 0;
+}
+
+/* Quand active : devient visible et prend tout l'espace du parent */
+.waitingPage.active {
+	visibility: visible;
+    opacity: 1;
+    display: flex;
+    position: absolute;  /* <-- changé de fixed à absolute */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+	background-color: rgb(29, 29, 29);
+	color: white;
+
+
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
 }
 
 #GameMenu
@@ -996,6 +1136,7 @@ height: auto !important;
     opacity: 1;
     visibility: visible;
 	justify-content: center;
+	flex-direction: column;
 	flex-wrap: wrap;
 	position: absolute;
     bottom: 50%; /* Moves the menu to the middle of the bottomPage */
@@ -1012,17 +1153,10 @@ height: auto !important;
     visibility: hidden;
 }
 
-#friendList
-{
-	left:30%;
-	width:300px;
-	position: relative;
-}
-
 /*GAME*/
 #scoreboard {
     display: none;
-    top: 10%;
+    top: 20px;
 	justify-content: space-between;
 	width: 800px;
     max-width: 90%;
@@ -1047,12 +1181,12 @@ height: auto !important;
     visibility: hidden;
 	transition: transform 0.5s ease, opacity 0.5s ease;/*  Animation fluide*/
 	transform: scale(1.5);
-	width: 80vw;
+	width: 72vw;
 	max-width: 1000px;
-	height: 60vw;
+	height: 54vw;
 	max-height: 500px;
 	position: absolute;
-
+	bottom: 10px;
 }
 
 #TheGame.active, #scoreboard.active, #ReturnButton.active, #winner.active, #Tournament.active
@@ -1088,6 +1222,7 @@ height: auto !important;
 	flex-wrap: wrap;
 	border: none;
 	border-radius: 5px;
+	
     transition: transform 0.5s ease, opacity 0.5s ease; /* Animation fluide */
 }
 
@@ -1105,8 +1240,8 @@ height: auto !important;
 	border-radius: 5px;
     transition: transform 0.5s ease, opacity 0.5s ease; /* Animation fluide */
 	background-color: transparent;
-	left: 10%;
 	bottom:10%;
+	position: absolute;
 }
 
 
@@ -1127,34 +1262,40 @@ height: auto !important;
 
 #accept, #decline
 {
-	background-color: transparent;
-	cursor: pointer;
-	flex-wrap: wrap;
-	border: none;
-	border-radius: 5px;
+    border: solid 3px #f7f7f7;
+    cursor: pointer;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: transparent;
+    padding:10px;
+    font-family: 'Poiret One', serif;
+    color: #f7f7f7;
+    font-size: 54px;
+    font-weight: bold;
 }
 
 #accept:hover
 {
-	background-color: #00ff1e36;
-	transform: scale(1.05);
+    background-color: #00ff1e36;
+    transform: scale(1.05);
 }
 
 #decline:hover
 {
-	background-color: #ff000045;
-	transform: scale(1.05);
+    background-color: #ff000045;
+    transform: scale(1.05);
 }
 
 #loading, #cant_play
 {
-	display:none;
-	position: absolute;
-	top:50%;
-	flex-wrap: wrap;
-	text-size-adjust:inherit ;
+    display:none;
+    position: absolute;
+    top:50%;
+    flex-wrap: wrap;
+    font-family: 'Poiret One', serif;
+    color: #f7f7f7;
+    font-size: 54px;
+    font-weight: bold;
 }
-/*end of game css SETUP*/
 
 
 .gameTitle, #cant_play
@@ -1165,54 +1306,92 @@ height: auto !important;
 }
 
 
-#theTournament8 {
+#createPage {
+	width: 100%; /* Ajuste selon la taille souhaitée */
+	height: 100%;
 	
+    align-items: center;
+    justify-content: center;
+    position: relative;
+	flex-direction: column;
+}
+
+#joinPage {
 	width: 100%; /* Ajuste selon la taille souhaitée */
 	height: 100%;
     align-items: center;
     justify-content: center;
     position: relative;
+	flex-direction: column;
 }
 
-#theTournament8 img {
+
+.tournamentUserList {
+    width: auto; 
+    height: auto; /* Allow height to grow dynamically with content */
+
+	min-width: 200px;
 	
-    width: 100%; /* Ajuste selon la taille souhaitée */
-	height: 100%;
-    position: relative;
-    z-index: 0;
-}
-
-#theTournament8 input {
-	position: fixed;
-	background-color: darkgrey;
-    width: 120px;
-    padding: 5px;
-    text-align: center;
-	z-index: 1;
-}
-
-#p1_Name { top: 10%; left: -50%; }
-#p2_Name { top: 30%; left: -50%; }
-#p3_Name { top: 55%; left: -50%; }
-#p4_Name { top: 75%; left: -50%; }
-
-#p5_Name { top: 10%; right: -50%; }
-#p6_Name { top: 30%; right: -50%; }
-#p7_Name { top: 55%; right: -50%; }
-#p8_Name { top: 75%; right: -50%; }
-
-.tournament_button {
-    position: absolute;
-    bottom: -25px;
+    border: solid 3px #ccc;
+    color: #ccc;
+    font-family: 'Poiret One', serif;
+    font-size: 28px;
+    padding: 10px; /* Adds space inside the box */
+    text-align: left; /* Align the text to the left */
+    list-style-type: disc; /* Display bullet points */
+    list-style-position: inside; /* Make sure bullet points are inside the list item */
+	transition: transform 0.3s ease;
 }
 
 
-#p1_name { top: 10%; left: 5%; }
-#p2_name { top: 30%; left: 5%; }
+#tournamentPlayersList, #tournamentListJoin {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    list-style-type: disc;
+    list-style-position: inside;
+	transition: transform 0.3s ease;
+}
 
-#p3_name { top: 50%; right: 5%; }
-#p4_name { top: 70%; right: 5%; }
 
+/* Style for each list item */
+#tournamentPlayersList li, #tournamentListJoin li {
+    width: 100%;
+    padding: 5px 0; /* Adds space between list items */
+    font-size: 22px;
+    color: #ccc;
+    transition: transform 0.3s ease;
+}
+
+
+/* Make the box grow dynamically with each user joining */
+#tournamentPlayersList li {
+    font-size: 24px;
+}
+
+#tournamentPlayersList {
+    overflow-y: auto; /* Allows scrolling if the list becomes too long */
+    max-height: 400px; /* Adjust based on your design, to control max height */
+}
+
+.tounament-button {
+	width: 100%;
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+	border: solid 3px #f7f7f7;
+	font-family: 'Poiret One', serif;/*defini la police du texte*/
+	background-color: black;
+	color: #f7f7f7;
+}
+
+.tounament-button:hover {
+	background-color: #f7f7f7;
+	color: black;
+}
 
 /*TOMAINPAGE BUTTON SETUP*/
 .toMainPageButton
@@ -1232,15 +1411,52 @@ height: auto !important;
 
 .toMainPageButton:hover {
     background-color: transparent; /*quand la souris passe dessus change la couleurs*/
-    transform: scale(1.05); /* Agrandit légèrement l'élément */
+    transform: scale(1.1); /* Agrandit légèrement l'élément */
 }
+
+.toMainPageButton.disabled {
+    pointer-events: none; /* disables click */
+    opacity: 0.6; /* optional: gives a visual cue it's disabled */
+}
+
+
 /*END OF toMAINPAGE BUTTON SETUP*/
 
+.ai-difficulty.active{
+	display: block;
+}
+
+.ai-difficulty {
+	display: none;
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: solid 3px #f7f7f7;
+    font-family: 'Poiret One', serif;
+    background-color: black;
+    color: #f7f7f7;
+}
+
+.ai-difficulty:hover {
+    background-color: #f7f7f7;
+    color: black;
+}
 
 
 
-
-
+.user-info {
+	font-family: 'Poiret One', serif;
+	font-weight: 100;
+	font-size: 22px;
+	white-space: nowrap;
+	/*overflow: hidden;
+	//text-overflow: ellipsis;*/
+	margin: 3px;
+}
 
 /*---------------------------------------- GOOGLE FONT UTILS---------------------------*/
 .material-symbols-outlined {
@@ -1256,4 +1472,50 @@ height: auto !important;
     font-size: 27px;         /* Taille de l'icône */
     color: #f0f0f0;        /* Couleur de l'icône */
 }
-/*---------------------------------------- JAVASCRIPT UTILS---------------------------*/
+
+.icon-hover{
+	position: relative;
+	padding: 1px;
+	z-index: 100;
+
+    font-size: 18px;         /* Taille de l'icône */
+    color: #f0f0f0;        /* Couleur de l'icône */
+	background-color: #222;
+	border: solid 2px #f0f0f0;
+	border-radius: 50%;
+	transition: 0.3s ease-in-out;
+
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.icon-hover:hover{
+	transform: scale(1.1) rotate(-25deg);
+	cursor: pointer;
+}
+
+.image-container:hover .icon-hover:not(:hover) {
+	transform: rotate(-20deg);
+}
+/*---------------------------------------- JAVASCRIPT UTILS---------------------------*
+/* Style général pour le bouton "Rejoindre le tournoi" */
+.buttonJoinTournament {
+    margin: 0px;
+    background-color: #444;
+    color: white;
+    padding: 12px 24px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    text-align: center;
+    display: block;
+    max-height: 10vw;
+}
+
+/* Effet au survol du bouton */
+.buttonJoinTournament:hover {
+    background-color: #666;        /* Change la couleur de fond au survol */
+    border-color: #444;            /* Bordure légèrement plus claire au survol */
+}
