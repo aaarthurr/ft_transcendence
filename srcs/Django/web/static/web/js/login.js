@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const inputs = [email, password];
 
 		for (let input of inputs) {
-			if (input.value.length > 64) {
+			if (input.length > 64) {
 				alert(`Le champ "${input.name}" ne peut pas dépasser 64 caractères.`);
 				return false;
 			}

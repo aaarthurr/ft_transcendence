@@ -383,6 +383,7 @@ function returnToPreviousMenu()
 		friendMenu[0].classList.add('active');
 		VsAi.classList.add('inactive');
 		VsFriend.classList.add('inactive');
+		tournamentButton.classList.remove('active')
 		tournamentButton.classList.add('inactive');
 
 
@@ -400,8 +401,8 @@ function returnToPreviousMenu()
 		joinMenu.classList.add('active');
 		createPage.classList.remove('active');
 		joinPage.classList.remove('active');
-
-
+		tournamentButton.classList.remove('active')
+		tournamentButton.classList.add('inactive');
 	}
 	else if (MenuTrigger === 5)
 	{
@@ -412,8 +413,8 @@ function returnToPreviousMenu()
 		joinPage.classList.add('active');
 		createMenu.classList.remove('active');
 		joinMenu.classList.remove('active');
-
-
+		tournamentButton.classList.remove('active')
+		tournamentButton.classList.add('inactive');
 	}
 }
 
@@ -482,10 +483,12 @@ function activateFriendMenu()
 	VsAi.classList.add('inactive');
 	VsFriend.classList.add('inactive');
 	tournamentButton.classList.add('inactive');
+	tournamentButton.classList.remove('active');
 	local.classList.add('active');
 	online.classList.add('active');
 	createMenu.classList.add('inactive');
 	joinMenu.classList.add('inactive');
+	
 }
 
 
@@ -510,12 +513,12 @@ function activateTournament()
 	online.classList.remove('active');
 	local.classList.remove('active');
 
+
+	tournamentButton.classList.add('inactive');
+	tournamentButton.classList.remove('active');
+
 	createMenu.classList.add('active');
 	joinMenu.classList.add('active');
-
-	
-	tournamentButton.classList.add('inactive');
-
 
 	returnButton.classList.add('active');
 	
